@@ -1,6 +1,6 @@
 package Model;
 
-import Model.Parse;
+import Model.Parse.Parser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class ReadFile {
     private File corpus;
-    private Parse parser;
+    private Parser parser;
     private HashMap<String,Model.Document> docMap;
 
 
@@ -19,7 +19,7 @@ public class ReadFile {
     //constructor
     public ReadFile(String path){
         corpus = new File(path);
-        parser = new Parse();
+        parser = new Parser();
         docMap = new HashMap<>();
     }
 
@@ -35,11 +35,13 @@ public class ReadFile {
                        String docNum = element.getElementsByTag("DOCNO").get(0).text();
                        String docTitle = element.getElementsByTag("TI").get(0).text();
                        String docCity="";
-                       Elements docCityElement = element.getElementsByTag("F P=104");
+                       Elements docCityElement = element.getElementsByTag("F");
 
-                       if (!docCityElement.isEmpty()){
-                           docCity = docCityElement.get(0).text();
-                           docCity = docCity.split(" ")[0].toUpperCase();
+                       if (!docCityElement.isEmpty()) {
+                           if (docCityElement.attr("p").equals("104")) {
+                               docCity = docCityElement.get(0).text();
+                               docCity = docCity.split(" ")[0].toUpperCase();
+                           }
                        }
                        docMap.put(docNum, new Model.Document(file.getName(), docTitle,i++ ,docCity));
                        String data = element.getElementsByTag("TEXT").get(0).text();
