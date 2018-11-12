@@ -8,15 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Parser {
-    public static int index = 0;
+    public static int index;
     private static List<String> tokenList;
     private static HashMap<String, Term> terms = new HashMap<>();
     private String fileName;
     private String[] punctuation = {",","-","--"," "};
 
     public void parse(String docNum, String text){
-        this.fileName = fileName;
-        Splitter splitter = Splitter.on(CharMatcher.anyOf("()[];*?!/:\" ")).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
+        this.fileName = docNum;
+        index = 0;
+        Splitter splitter = Splitter.on(CharMatcher.anyOf("()[];*?!:\" ")).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
         tokenList=splitter.splitToList(text);
         classify();
     }
@@ -25,10 +26,8 @@ public class Parser {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
             if (token.matches(".*\\d+.*")) {
-                if (token.contains("%")) {
-                    //Send To TokenPrecentage
-                    continue;
-                }
+                String term = Price.parsePrice(index, token);
+                saveTerm(term, new Term(term, fileName));
             }
         }
     }
@@ -50,6 +49,10 @@ public class Parser {
     public void printTerms() {
         for (int i=0;i<tokenList.size();i++) {
             System.out.println(getTokenFromList(i));
+        }
+        System.out.println();
+        for(String str: terms.keySet()){
+            System.out.println(str);
         }
     }
 }
