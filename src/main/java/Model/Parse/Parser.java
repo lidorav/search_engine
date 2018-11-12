@@ -12,7 +12,6 @@ public class Parser {
     private static List<String> tokenList;
     private static HashMap<String, Term> terms = new HashMap<>();
     private String fileName;
-    private String[] punctuation = {",","-","--"," "};
 
     public void parse(String docNum, String text){
         this.fileName = docNum;
@@ -26,13 +25,20 @@ public class Parser {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
             if (token.matches(".*\\d+.*")) {
-                String term = Price.parsePrice(index, token);
-                saveTerm(term, new Term(term, fileName));
+                String term = Price.parsePrice(index, token) + Percentage.parsePrecent(index, token) + Date.dateParse(index, token);
+                if (term.isEmpty())
+                    term = ANumbers.parseNumber(index, token);
+                addTerm(term, fileName, false);
+            } else {
+                String term = Date.dateParse(index,token);
+                addTerm(term, fileName, true);
             }
         }
     }
 
     public static String getTokenFromList(int index){
+        if(index >= tokenList.size())
+            return tokenList.get(tokenList.size()-1);
         String token =tokenList.get(index);
         token = token.replace(",","");
         if(!token.isEmpty()) {
@@ -42,8 +48,14 @@ public class Parser {
         return token;
     }
 
-    public static void saveTerm(String termName, Term term){
-        terms.put(termName, term);
+    private void addTerm(String token, String docID, boolean isWord){
+        Term term = new Term(token,docID);
+        if(terms.containsKey(token)){
+            terms.get(token).addShow(docID);
+        }
+        else {
+            terms.put(token,term);
+        }
     }
 
     public void printTerms() {

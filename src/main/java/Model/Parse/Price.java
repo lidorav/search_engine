@@ -22,19 +22,22 @@ public class Price extends ANumbers {
         if(thirdToken.contains("dollar")){
             res = convertToMillions(firstToken,secToken);
             Parser.index++;
-            if(secToken.matches("\\d+\\/\\d+"))
-                fraction = secToken;
-            return res + " " + fraction + " Dollars";
+            if(secToken.matches("\\d+\\/\\d+")) {
+                fraction = " "+secToken;
+                Parser.index++;
+            }
+            return res + fraction + " Dollars";
         }
         String forthToken = Parser.getTokenFromList(index+3).toLowerCase();
         if(forthToken.contains("dollar")){
             res = convertToMillions(firstToken,secToken);
             Parser.index = Parser.index + 2;
-            if(secToken.matches("\\d+\\/\\d+"))
-                fraction = secToken;
-            return res + " " + fraction + " Dollars";
+            if(secToken.matches("\\d+\\/\\d+")) {
+                fraction = " "+secToken;
+                Parser.index++;
+            }
+            return res + fraction + " Dollars";
         }
-
 
         return "";
     }

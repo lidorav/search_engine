@@ -1,7 +1,5 @@
 package Model.Parse;
 
-
-import java.lang.reflect.Array;
 import java.time.Month;
 
 public class Date {
@@ -10,7 +8,7 @@ public class Date {
             "may" ,"june" ,"jun" ,"july" ,"jul" ,"august" ,"aug" ,"september" ,"sep" ,
             "october" ,"oct" ,"november" ,"nov" ,"december" ,"dec"};
 
-    public String datePars (int index , String str) {
+    public static String dateParse (int index , String str) {
         String nextToken = Parser.getTokenFromList(index + 1);
 
         //DD Month pattern
@@ -33,7 +31,7 @@ public class Date {
         return "";
     }
 
-    public boolean isMonth(String targetValue) {
+    private static boolean isMonth(String targetValue) {
         targetValue=targetValue.toLowerCase();
         for(String s: dateArr){
             if(s.equals(targetValue))
@@ -42,7 +40,7 @@ public class Date {
         return false;
     }
 
-    public boolean isYear(String targetValue) {
+    private static boolean isYear(String targetValue) {
         if(targetValue.length()==4) {
             return true;
         }
