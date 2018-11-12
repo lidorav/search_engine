@@ -2,24 +2,24 @@ package Model.Parse;
 
 public class Percentage extends ANumbers {
 
-    private final String precent ="%";
-
-
     public String toPrecent(int index, String token){
         if(token.contains("%"))
             return token;
 
-        String nexToken = Parser.getTokenFromList(index+1);
-        if(nexToken.contains("precent")) {
-            token = token+precent;
+        String nextToken = Parser.getTokenFromList(index+1);
+        if(nextToken.equals("precent")) {
+            token = token+'%';
             Parser.index++;
+            return token;
         }
 
-        if(nexToken.contains("precentage")) {
-            token = token+precent;
+        if(nextToken.equals("precentage")) {
+            token = token+'%';
             Parser.index++;
+            return token;
         }
-        return token;
+
+        return "";
 
     }
 
