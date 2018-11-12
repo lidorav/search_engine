@@ -6,16 +6,18 @@ public class Percentage extends ANumbers {
 
 
     public String toPrecent(int index, String token){
-
         if(token.contains("%"))
             return token;
-        
-        if(token.contains("precent")) {
-            token = token.replace(" percent", this.precent);
+
+        String nexToken = Parser.getTokenFromList(index+1);
+        if(nexToken.contains("precent")) {
+            token = token+precent;
+            Parser.index++;
         }
 
-        if(token.contains("precentage")) {
-            token = token.replace(" precentage", this.precent);
+        if(nexToken.contains("precentage")) {
+            token = token+precent;
+            Parser.index++;
         }
         return token;
 
