@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Parser {
-
+    public static int index = 0;
     private static List<String> tokenList;
     private static HashMap<String, Term> terms = new HashMap<>();
     private String fileName;
@@ -22,22 +22,13 @@ public class Parser {
     }
 
     private void classify() {
-        int i=0;
-        for(i=0; i<tokenList.size(); i++){
-            String token = getTokenFromList(i);
-            if(token.matches(".*\\d+.*")){
-                if(token.contains("%")){
+        for (; index < tokenList.size(); index++) {
+            String token = getTokenFromList(index);
+            if (token.matches(".*\\d+.*")) {
+                if (token.contains("%")) {
                     //Send To TokenPrecentage
                     continue;
                 }
-                if(token.contains("$")){
-                    //Send To TokenPrice-Dollar
-                    continue;
-                }
-                String nextToken = getTokenFromList(i+1);
-                /*
-                * Dollars / Thousands / Millions / Billion / Precent / Precentage /
-                **/
             }
         }
     }
