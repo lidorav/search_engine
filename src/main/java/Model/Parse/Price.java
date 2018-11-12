@@ -10,12 +10,15 @@ public class Price extends ANumbers {
         String res;
         if(token.contains("$")){
             res = token.replace("$","");
-            res = classifyNumber(res);
             String nextToken = Parser.getTokenFromList(index+1).toLowerCase();
             if(Arrays.stream(values).anyMatch(nextToken::equals))
                 res = res + " " + Character.toUpperCase(nextToken.charAt(0));
                 return res + " Dollars";
         }
+        return "";
+    }
+
+    private String convertToMillions(){
         return "";
     }
 }
