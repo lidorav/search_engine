@@ -8,11 +8,11 @@ public class Main {
         //reader.read();
         //reader.print();
 
-         ANumbers temp;
-
+       /**  ANumbers temp;
         temp = new ANumbers();
-
         System.out.println(temp.classifyNumber("10045400403"));
+        */
 
+       
     }
 }
