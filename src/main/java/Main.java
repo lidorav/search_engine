@@ -5,6 +5,5 @@ public class Main {
         ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\corpus");
 
         reader.read();
-        reader.print();
     }
 }

@@ -50,6 +50,7 @@ public class ReadFile {
                }
                catch (Exception e) {
            }
+           parser.printTerms();
        }
     }
 
@@ -58,7 +59,6 @@ public class ReadFile {
         for (Model.Document doc: docMap.values()
              ) {
             System.out.println(doc.toString());
-
         }
     }
 
