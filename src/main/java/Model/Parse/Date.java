@@ -33,7 +33,7 @@ public class Date {
 
     private static boolean isMonth(String targetValue) {
         targetValue=targetValue.toLowerCase();
-        if(targetValue.length() == 3 && !targetValue.contains("may"))
+        if(targetValue.length() == 3 && !targetValue.equals("may"))
             targetValue = shortMonth(targetValue);
 
         for(String s: dateArr){
