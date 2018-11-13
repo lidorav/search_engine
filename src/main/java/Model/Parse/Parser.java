@@ -13,11 +13,11 @@ public class Parser {
     private static HashMap<String, Term> terms = new HashMap<>();
     private String fileName;
 
-    public void parse(String docNum, String text){
+    public void parse(String docNum, String text) {
         this.fileName = docNum;
         index = 0;
         Splitter splitter = Splitter.on(CharMatcher.anyOf("()[];*?!:\" ")).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
-        tokenList=splitter.splitToList(text);
+        tokenList = splitter.splitToList(text);
         classify();
     }
 
@@ -30,34 +30,50 @@ public class Parser {
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, fileName, false);
             } else {
-                String term = Date.dateParse(index,token);
+                String term = Date.dateParse(index, token);
+                if (term.isEmpty())
+                    term = token;
                 addTerm(term, fileName, true);
             }
         }
     }
 
-    public static String getTokenFromList(int index){
-        if(index >= tokenList.size())
-            return tokenList.get(tokenList.size()-1);
-        String token =tokenList.get(index);
-        token = token.replace(",","");
-        if(!token.isEmpty()) {
+    public static String getTokenFromList(int index) {
+        if (index >= tokenList.size())
+            return tokenList.get(tokenList.size() - 1);
+        String token = tokenList.get(index);
+        token = token.replace(",", "");
+        if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
                 return token.substring(0, token.length() - 1);
         }
         return token;
     }
 
-    private void addTerm(String token, String docID, boolean isWord){
-        Term term = new Term(token,docID);
-        if(terms.containsKey(token)){
-            terms.get(token).addShow(docID);
+    private void addTerm(String token, String docID, boolean isWord) {
+        if (Character.isUpperCase(token.charAt(0))) {
+            token = token.toUpperCase();
         }
-        else {
-            terms.put(token,term);
+        Term term = new Term(token, docID);
+        if (terms.containsKey(token)) {
+            terms.get(token).addShow(docID);
+        } else {
+            if (isWord) {
+                String upperCased = token.toUpperCase();
+                if (terms.containsKey(upperCased)) {
+                    Term t = terms.get(upperCased);
+                    t.setName(token);
+                    t.addShow(docID);
+                    terms.remove(upperCased);
+                    terms.put(token, t);
+                    return;
+                }
+                terms.put(token, term);
+                return;
+            }
+            terms.put(token, term);
         }
     }
-
     public void printTerms() {
         for (int i=0;i<tokenList.size();i++) {
             System.out.println(getTokenFromList(i));
