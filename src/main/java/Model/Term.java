@@ -16,6 +16,10 @@ public class Term {
         docTf.merge(docID, 1, (a, b) -> a + b);
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
