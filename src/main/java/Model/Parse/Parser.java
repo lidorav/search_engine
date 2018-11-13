@@ -25,12 +25,12 @@ public class Parser {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
             if (token.matches(".*\\d+.*")) {
-                String term = Price.parsePrice(index, token) + Percentage.parsePrecent(index, token) + Date.dateParse(index, token);
+                String term = Price.parsePrice(index, token) + Percentage.parsePrecent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token);
                 if (term.isEmpty())
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, fileName, false);
             } else {
-                String term = Date.dateParse(index, token);
+                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token);
                 if (term.isEmpty())
                     term = token;
                 addTerm(term, fileName, true);

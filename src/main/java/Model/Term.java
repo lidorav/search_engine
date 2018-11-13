@@ -5,7 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Term {
     private String name;
     private ConcurrentHashMap<String, Integer> docTf = new ConcurrentHashMap<>();
-    private Double idf;
+    private int df;
+    private int tf;
 
     public Term(String name, String docID) {
         this.name = name;
@@ -22,10 +23,6 @@ public class Term {
 
     public String getName() {
         return name;
-    }
-
-    public Double getIdf() {
-        return idf;
     }
 
     @Override
