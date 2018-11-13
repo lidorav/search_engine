@@ -32,12 +32,27 @@ public class Date {
     }
 
     private static boolean isMonth(String targetValue) {
+        if(targetValue.length() == 3)
+            targetValue = shortMonth(targetValue);
         targetValue=targetValue.toLowerCase();
         for(String s: dateArr){
             if(s.equals(targetValue))
                 return true;
         }
         return false;
+    }
+
+    private static String shortMonth(String targetValue){
+        for (int i=0; i <dateArr.length;i++){
+             if(dateArr[i].contains(targetValue) && targetValue.length()>3){
+                 return dateArr[i];
+             }
+
+        }
+
+        return "";
+
+
     }
 
     private static boolean isYear(String targetValue) {
