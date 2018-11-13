@@ -30,7 +30,7 @@ public class ANumbers {
         }
         if(secToken.matches("\\d+\\/\\d+")) {
             Parser.index++;
-            fraction = secToken;
+            fraction = " " + secToken;
         }
         return number + fraction;
     }
