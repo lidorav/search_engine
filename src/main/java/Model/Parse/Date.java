@@ -27,7 +27,6 @@ public class Date {
             return Month.valueOf(str.toUpperCase()).getValue() + "-" + nextToken;
         }
 
-
         return "";
     }
 
@@ -45,7 +44,7 @@ public class Date {
 
     private static String shortMonth(String targetValue){
         for (int i=0; i <dateArr.length;i++){
-             if(dateArr[i].contains(targetValue) && targetValue.length()>3){
+             if(dateArr[i].contains(targetValue) && dateArr[i].length()>3){
                  return dateArr[i];
              }
         }
