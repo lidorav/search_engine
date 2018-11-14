@@ -7,6 +7,10 @@ public class ANumbers {
         final long BILLION = 1000000000L;
         final long TRILLION = 1000000000000L;
 
+        if(firstToken.matches("\\d+\\/\\d+")) {
+           return firstToken;
+        }
+
         String fraction = "";
         double number = Double.parseDouble(firstToken);
         if ((number >= 1000) && (number < MILLION))
@@ -15,6 +19,7 @@ public class ANumbers {
             return number/MILLION + "M";
         if(number >= BILLION)
             return number/BILLION + "B";
+
         String secToken = Parser.getTokenFromList(index+1).toLowerCase();
         if(secToken.equals("million")){
             Parser.index++;
