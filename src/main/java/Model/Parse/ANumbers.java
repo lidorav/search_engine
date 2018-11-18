@@ -47,6 +47,12 @@ public class ANumbers {
     public static String parseNumber(String firstToken, String secToken){
         String fraction= "";
         double number = Double.parseDouble(firstToken);
+        if ((number >= 1000) && (number < MILLION))
+            return number/1000 + "K";
+        if((number >= MILLION) && (number < BILLION))
+            return number/MILLION + "M";
+        if(number >= BILLION)
+            return number/BILLION + "B";
         if(secToken.equals("thousand")){
             return firstToken + "K";
         }

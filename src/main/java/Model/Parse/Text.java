@@ -5,6 +5,8 @@ public class Text {
     public static String parseText(int index, String token){
         String upperToken = token.toUpperCase();
         String lowerToken = token.toLowerCase();
+        if(lowerToken.equals("between"))
+            return "";
         //check if first letter is uppercased
         if(Character.isUpperCase(token.charAt(0))) {
             //check if uppercased word exist in dictionary, if so return uppercased

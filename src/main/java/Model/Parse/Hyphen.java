@@ -4,14 +4,23 @@ public class Hyphen {
 
     public static String parseHyphen(int index, String token) {
         String res = "";
+        String part1;
+        String part2;
         if (token.contains("-")) {
             if (token.matches(".*\\d+.*")) {
-                res = token;
                 String[] parts = token.split("-");
-                if (parts[0].chars().allMatch(Character::isDigit))
-                    res = ANumbers.parseNumber(index, parts[0]) + "-" + parts[1];
+                if (parts[0].chars().allMatch(Character::isDigit)) {
+                    part1 = ANumbers.parseNumber(index, parts[0]);
+                }
+                else{
+                    part1 = parts[0];
+                }
                 if (parts[1].chars().allMatch(Character::isDigit))
-                    res = parts[0] + "-" + ANumbers.parseNumber(index, parts[1]);
+                    part2 = ANumbers.parseNumber(index, parts[1]);
+                else{
+                    part2 = parts[1];
+                }
+                res = part1 + "-" + part2;
             }
             return res;
         }
@@ -21,7 +30,8 @@ public class Hyphen {
                 String[] parts = secToken.split("-");
                 res = ANumbers.parseNumber(token,parts[0].toLowerCase());
                 res = res + "-" + parts[1];
-                return parseHyphen(index,res);
+                Parser.index++;
+                return parseHyphen(index+1,res);
             }
         }
         if(token.toLowerCase().equals("between")){
