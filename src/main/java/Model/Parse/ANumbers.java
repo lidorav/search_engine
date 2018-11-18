@@ -21,6 +21,10 @@ public class ANumbers {
             return number/BILLION + "B";
 
         String secToken = Parser.getTokenFromList(index+1).toLowerCase();
+        if(secToken.equals("thousand")){
+            Parser.index++;
+            return firstToken + " K";
+        }
         if(secToken.equals("million")){
             Parser.index++;
             return firstToken + " M";

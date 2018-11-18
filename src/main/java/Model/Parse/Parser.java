@@ -4,8 +4,11 @@ import Model.Term;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Parser {
     public static int index;
@@ -16,7 +19,8 @@ public class Parser {
     public void parse(String docNum, String text) {
         this.fileName = docNum;
         index = 0;
-        Splitter splitter = Splitter.on(CharMatcher.anyOf("()[];*?!:\" ")).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
+        Pattern pattern = Pattern.compile("[ \\(\\)\\[\\]\\:\\;\\!\\?\\\"\\(]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
         tokenList = splitter.splitToList(text);
         classify();
     }
@@ -74,13 +78,32 @@ public class Parser {
             terms.put(token, term);
         }
     }
-    public void printTerms() {
+    public void printTerms(){
+
+        //create a file first
+        PrintWriter outputfile = null;
+        try {
+            outputfile = new PrintWriter(fileName+"-1");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        //replace your System.out.print("your output");
+
         for (int i=0;i<tokenList.size();i++) {
-            System.out.println(getTokenFromList(i));
+            outputfile.println(getTokenFromList(i));
         }
-        System.out.println();
+        outputfile.close();
+
+        try {
+            outputfile = new PrintWriter(fileName+"-2");
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+    //replace your System.out.print("your output");
+
         for(String str: terms.keySet()){
-            System.out.println(str);
+            outputfile.println(str);
         }
+        outputfile.close();
     }
 }
