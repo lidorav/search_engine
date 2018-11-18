@@ -1,11 +1,11 @@
 package Model.Parse;
 
 public class ANumbers {
+    final static long MILLION = 1000000L;
+    final static long BILLION = 1000000000L;
+    final static long TRILLION = 1000000000000L;
 
     public static String parseNumber(int index, String firstToken){
-        final long MILLION = 1000000L;
-        final long BILLION = 1000000000L;
-        final long TRILLION = 1000000000000L;
 
         if(firstToken.matches("\\d+\\/\\d+")) {
            return firstToken;
@@ -23,19 +23,19 @@ public class ANumbers {
         String secToken = Parser.getTokenFromList(index+1).toLowerCase();
         if(secToken.equals("thousand")){
             Parser.index++;
-            return firstToken + " K";
+            return firstToken + "K";
         }
         if(secToken.equals("million")){
             Parser.index++;
-            return firstToken + " M";
+            return firstToken + "M";
         }
         if(secToken.equals("billion")){
             Parser.index++;
-            return firstToken + " B";
+            return firstToken + "B";
         }
         if(secToken.equals("trillion")){
             Parser.index++;
-            return number*(TRILLION/BILLION) + " B";
+            return number*(TRILLION/BILLION) + "B";
         }
         if(secToken.matches("\\d+\\/\\d+")) {
             Parser.index++;
@@ -44,5 +44,24 @@ public class ANumbers {
         return number + fraction;
     }
 
-
+    public static String parseNumber(String firstToken, String secToken){
+        String fraction= "";
+        double number = Double.parseDouble(firstToken);
+        if(secToken.equals("thousand")){
+            return firstToken + "K";
+        }
+        if(secToken.equals("million")){
+            return firstToken + "M";
+        }
+        if(secToken.equals("billion")){
+            return firstToken + "B";
+        }
+        if(secToken.equals("trillion")){
+            return number*(TRILLION/BILLION) + "B";
+        }
+        if(secToken.matches("\\d+\\/\\d+")) {
+            fraction = " " + secToken;
+        }
+        return number + fraction;
+    }
 }

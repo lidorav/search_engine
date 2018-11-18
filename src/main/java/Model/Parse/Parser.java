@@ -14,10 +14,10 @@ public class Parser {
     public static int index;
     private static List<String> tokenList;
     private static HashMap<String, Term> terms = new HashMap<>();
-    private String fileName;
+    private String docID;
 
     public void parse(String docNum, String text) {
-        this.fileName = docNum;
+        this.docID = docNum;
         index = 0;
         Pattern pattern = Pattern.compile("[ \\(\\)\\[\\]\\:\\;\\!\\?\\\"\\(]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
         Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.anyOf(",--")).omitEmptyStrings();
@@ -32,12 +32,12 @@ public class Parser {
                 String term = Price.parsePrice(index, token) + Percentage.parsePrecent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token);
                 if (term.isEmpty())
                     term = ANumbers.parseNumber(index, token);
-                addTerm(term, fileName, false);
+                addTerm(term, docID);
             } else {
-                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token);
+                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Text.parseText(index, token);
                 if (term.isEmpty())
                     term = token;
-                addTerm(term, fileName, true);
+                addTerm(term, docID);
             }
         }
     }
@@ -54,36 +54,33 @@ public class Parser {
         return token;
     }
 
-    private void addTerm(String token, String docID, boolean isWord) {
-        if (Character.isUpperCase(token.charAt(0))) {
-            token = token.toUpperCase();
-        }
+    private void addTerm(String token, String docID) {
         Term term = new Term(token, docID);
-        if (terms.containsKey(token)) {
+        if (terms.containsKey(token))
             terms.get(token).addShow(docID);
-        } else {
-            if (isWord) {
-                String upperCased = token.toUpperCase();
-                if (terms.containsKey(upperCased)) {
-                    Term t = terms.get(upperCased);
-                    t.setName(token);
-                    t.addShow(docID);
-                    terms.remove(upperCased);
-                    terms.put(token, t);
-                    return;
-                }
-                terms.put(token, term);
-                return;
-            }
+        else
             terms.put(token, term);
-        }
+    }
+
+    public static boolean checkExist(String token){
+        return terms.containsKey(token);
+    }
+
+    public static void replaceTerm(String currentToken, String newToken){
+        Term term = terms.get(currentToken);
+        term.setName(newToken);
+        terms.remove(currentToken);
+        terms.put(newToken,term);
+    }
+
+    public static void replaceTokens(int index, String newToken){
+        tokenList.set(index,newToken);
     }
     public void printTerms(){
-
         //create a file first
         PrintWriter outputfile = null;
         try {
-            outputfile = new PrintWriter(fileName+"-1");
+            outputfile = new PrintWriter(docID+"-1");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -95,7 +92,7 @@ public class Parser {
         outputfile.close();
 
         try {
-            outputfile = new PrintWriter(fileName+"-2");
+            outputfile = new PrintWriter(docID+"-2");
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
