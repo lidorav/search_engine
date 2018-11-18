@@ -11,8 +11,14 @@ public class Hyphen {
                 String[] parts = token.split("-");
                 if(parts[0].chars().allMatch(Character::isDigit))
                     res = ANumbers.parseNumber(index,parts[0]) + "-" + parts[1];
+                else{
+                    res = parts[0];
+                }
                 if(parts[1].chars().allMatch(Character::isDigit))
-                    res = parts[0] + "-" + ANumbers.parseNumber(index,parts[1]);
+                    res = res + "-" + ANumbers.parseNumber(index,parts[1]);
+                else{
+                    res = res + "-" + parts[1];
+                }
             }
             return res;
         }
