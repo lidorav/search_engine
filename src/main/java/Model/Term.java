@@ -13,6 +13,10 @@ public class Term {
         addShow(docID);
     }
 
+    public ConcurrentHashMap<String, Integer> getDocTf() {
+        return docTf;
+    }
+
     public void addShow(String docID) {
         docTf.merge(docID, 1, (a, b) -> a + b);
     }
