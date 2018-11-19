@@ -3,28 +3,27 @@ package Model.Parse;
 import Model.Term;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import javafx.util.Pair;
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class Parser {
     public static int index;
     private static List<String> tokenList;
-    private static HashMap<String, Term> terms = new HashMap<>();
+    private static Map<String, Term> terms = new TreeMap<>();
     private String docID;
 
     public void parse(String docNum, String text) {
         this.docID = docNum;
         index = 0;
-        Pattern pattern = Pattern.compile("[ \\(\\)\\[\\]\\:\\;\\!\\?\\\"\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        Pattern pattern = Pattern.compile("[ \\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
         Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.anyOf(",'`")).omitEmptyStrings();
-        tokenList = splitter.splitToList(text);
+        tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
     }
 
@@ -34,12 +33,12 @@ public class Parser {
             if(token.isEmpty())
                 continue;
             if (token.matches(".*\\d+.*")) {
-                String term = Price.parsePrice(index, token) + Percentage.parsePercent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token);
+                String term = Price.parsePrice(index, token) + Percentage.parsePercent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token) + Quotation.parseQuotation(index,token);
                 if (term.isEmpty())
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, docID);
             } else {
-                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Text.parseText(index, token);
+                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Text.parseText(index, token) + Quotation.parseQuotation(index,token);
                 if (term.isEmpty())
                     term = token;
                 addTerm(term, docID);
@@ -71,11 +70,15 @@ public class Parser {
         return terms.containsKey(token);
     }
 
-    public static void replaceTerm(String currentToken, String newToken){
-        Term term = terms.get(currentToken);
-        term.setName(newToken);
-        terms.remove(currentToken);
-        terms.put(newToken,term);
+    public static void replaceTerm(String currentTerm, String newTerm){
+        Term term = terms.get(currentTerm);
+        term.setName(newTerm);
+        terms.remove(currentTerm);
+        terms.put(newTerm,term);
+    }
+
+    public static void replaceToken (int index, String newToken){
+        tokenList.set(index,newToken);
     }
 
     public void printTerms(){
@@ -86,7 +89,6 @@ public class Parser {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        //replace your System.out.print("your output");
 
         for (int i=0;i<tokenList.size();i++) {
             outputfile.println(getTokenFromList(i));
@@ -98,7 +100,6 @@ public class Parser {
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
-    //replace your System.out.print("your output");
 
         for(String str: terms.keySet()){
             outputfile.println(str);

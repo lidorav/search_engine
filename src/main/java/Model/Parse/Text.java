@@ -14,7 +14,7 @@ public class Text {
     public static String parseText(int index, String token){
         String upperToken = token.toUpperCase();
         String lowerToken = token.toLowerCase();
-        if(lowerToken.equals("between"))
+        if(lowerToken.equals("between") || token.contains("\""))
             return "";
         //check if first letter is uppercased
         if(Character.isUpperCase(token.charAt(0))) {
