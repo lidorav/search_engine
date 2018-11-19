@@ -45,9 +45,9 @@ public class Date {
         return false;
     }
 
-    private static boolean isShortMonth(String token){
-        token=token.toLowerCase();
-        if(token.length() == 3 && !token.equals("may"))
+    private static boolean isShortMonth(String token) {
+        token = token.toLowerCase();
+        if (token.length() == 3 && (!token.equals("may")) || (!token.equals("mar")))
             return true;
 
         return false;
@@ -64,9 +64,12 @@ public class Date {
     }
 
     private static boolean isYear(String targetValue) {
-        if(targetValue.length()==4) {
+        if (targetValue.length() == 4 && allDigits(targetValue)) {
             return true;
         }
         return false;
+    }
+    private static boolean allDigits(String s) {
+        return s.replaceAll("\\d", "").equals("");
     }
 }
