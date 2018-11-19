@@ -28,6 +28,7 @@ public class Parser {
     private void classify() {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
+
             if (token.matches(".*\\d+.*")) {
                 String term = Price.parsePrice(index, token) + Percentage.parsePrecent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token);
                 if (term.isEmpty())
@@ -76,6 +77,7 @@ public class Parser {
     public static void replaceTokens(int index, String newToken){
         tokenList.set(index,newToken);
     }
+
     public void printTerms(){
         //create a file first
         PrintWriter outputfile = null;
@@ -87,7 +89,9 @@ public class Parser {
         //replace your System.out.print("your output");
 
         for (int i=0;i<tokenList.size();i++) {
-            outputfile.println(getTokenFromList(i));
+            String token =getTokenFromList(i);
+            outputfile.println(token);
+            outputfile.println(terms.get(token));
         }
         outputfile.close();
 

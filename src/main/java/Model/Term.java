@@ -25,11 +25,33 @@ public class Term {
         return name;
     }
 
+    /**
+     * with a given token - return its df
+     * @param token
+     * @return df
+     */
+    public int countDf (String token) {
+        this.df = 0;
+        if (docTf.containsKey(token)) {
+            df = docTf.get(token);
+        }
+        return df;
+    }
     @Override
     public String toString() {
         return "Term{" +
                 "name='" + name + '\'' +
-                ", docTf=" + docTf +
+                ", docTf=" + docTf + '\'' +
+                ", docdf=" + df +
                 '}';
     }
+
+    public void print(){
+        for (int i:docTf.values())
+        System.out.println(i);
+              {
+
+        }
+    }
+
 }
