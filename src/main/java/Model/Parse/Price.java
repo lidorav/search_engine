@@ -46,24 +46,28 @@ public class Price extends ANumbers {
         final long MILLION = 1000000L;
         final long BILLION = 1000000000L;
         final long TRILLION = 1000000000000L;
-        double number = Double.parseDouble(str);
-        if(nextStr.equals("trillion")){
-            str = number * (TRILLION/MILLION) + " M";
-            Parser.index++;
+        try {
+            double number = Double.parseDouble(str);
+            if(nextStr.equals("trillion")){
+                str = number * (TRILLION/MILLION) + " M";
+                Parser.index++;
+                return str;
+            }
+            if(nextStr.equals("billion") || nextStr.equals("bn")){
+                str = number * (BILLION/MILLION) + " M";
+                Parser.index++;
+                return str;
+            }
+            if(nextStr.equals("million") || nextStr.equals("m")){
+                str = number + " M";
+                Parser.index++;
+                return str;
+            }
+            if (number >= MILLION)
+                return number / MILLION + " M";
             return str;
+        }catch (Exception e){
+            return "";
         }
-        if(nextStr.equals("billion") || nextStr.equals("bn")){
-            str = number * (BILLION/MILLION) + " M";
-            Parser.index++;
-            return str;
-        }
-        if(nextStr.equals("million") || nextStr.equals("m")){
-            str = number + " M";
-            Parser.index++;
-            return str;
-        }
-        if (number >= MILLION)
-            return number / MILLION + " M";
-    return str;
     }
 }

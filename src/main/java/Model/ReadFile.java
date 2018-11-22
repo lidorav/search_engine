@@ -50,8 +50,8 @@ public class ReadFile {
                }
                catch (Exception e) {
            }
-           parser.printTerms();
        }
+        parser.printTerms();
     }
 
 
