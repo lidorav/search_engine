@@ -5,6 +5,8 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Functions;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
+import opennlp.tools.stemmer.PorterStemmer;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -20,6 +22,12 @@ public class Parser {
     private static Map<String, Term> terms = new TreeMap<>();
     private String docID;
     private StopWords stopWord = new StopWords();
+    private  PorterStemmer porterStemmer = new PorterStemmer();
+
+
+    public Parser() {
+
+    }
 
     public void parse(String docNum, String text) {
         this.docID = docNum;
@@ -65,6 +73,7 @@ public class Parser {
     }
 
     private void addTerm(String token, String docID) {
+        token = porterStemmer.stem(token);
         Term term = new Term(token, docID);
         if (terms.containsKey(token))
             terms.get(token).addShow(docID);
