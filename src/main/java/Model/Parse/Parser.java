@@ -24,7 +24,7 @@ public class Parser {
         this.docID = docNum;
         index = 0;
         Pattern pattern = Pattern.compile("[ \\*\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
-        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.forPredicate(Predicates.compose(Predicates.containsPattern("[\'\\,\\'\\`]"), Functions.toStringFunction()))).omitEmptyStrings();
+        Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
     }
@@ -55,7 +55,7 @@ public class Parser {
         if (index >= tokenList.size())
             return tokenList.get(tokenList.size() - 1);
         String token = tokenList.get(index);
-        token = token.replace(",", "");
+        token = token.replaceAll("[,//']", "");
         if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
                 return token.substring(0, token.length() - 1);

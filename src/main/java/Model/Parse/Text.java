@@ -12,8 +12,8 @@ public class Text {
      * @return
      */
     public static String parseText(int index, String token){
-        if((token.contains("\"") || token.contains("'")) && token.length()>1)
-            token = token.replaceAll("[\"\\']","");
+        if(token.contains("\"") && token.length()>1)
+            token = token.replace("\"","");
         String upperToken = token.toUpperCase();
         String lowerToken = token.toLowerCase();
         //check if first letter is uppercased
