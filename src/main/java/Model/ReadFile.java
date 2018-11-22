@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 public class ReadFile {
@@ -17,7 +18,7 @@ public class ReadFile {
 
 
     //constructor
-    public ReadFile(String path){
+    public ReadFile(String path) throws FileNotFoundException {
         corpus = new File(path);
         parser = new Parser();
         docMap = new HashMap<>();
