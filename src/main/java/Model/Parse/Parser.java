@@ -17,6 +17,10 @@ public class Parser {
     private static List<String> tokenList;
     private static Map<String, Term> terms = new TreeMap<>();
     private String docID;
+    private StopWords stopWord = new StopWords();
+
+    public Parser() throws FileNotFoundException {
+    }
 
     public void parse(String docNum, String text) {
         this.docID = docNum;
@@ -30,7 +34,7 @@ public class Parser {
     private void classify() {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
-            if(token.isEmpty())
+            if(token.isEmpty() || stopWord.isStopWord(token))
                 continue;
             if (token.matches(".*\\d+.*")) {
                 String term = Price.parsePrice(index, token) + Percentage.parsePercent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index,token) + Quotation.parseQuotation(index,token);
