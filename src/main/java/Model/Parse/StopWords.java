@@ -15,7 +15,7 @@ public class StopWords {
     public StopWords()  {
         Scanner file = null;
         try {
-            file = new Scanner(new File("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\stop_words.txt"));
+            file = new Scanner(new File("stop_words.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -24,6 +24,7 @@ public class StopWords {
             // now dictionary is not recreated each time
             stopWordSet.add(file.next().trim());
         }
+        print();
     }
 
     public boolean isStopWord(String s){

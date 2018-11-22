@@ -21,9 +21,6 @@ public class Parser {
     private String docID;
     private StopWords stopWord = new StopWords();
 
-    public Parser() throws FileNotFoundException {
-    }
-
     public void parse(String docNum, String text) {
         this.docID = docNum;
         index = 0;
