@@ -6,7 +6,8 @@ public class ANumbers {
     final static long TRILLION = 1000000000000L;
 
     public static String parseNumber(int index, String firstToken) {
-
+        if((firstToken.contains("\"") || firstToken.contains("'")) && firstToken.length()>1)
+            firstToken = firstToken.replaceAll("[\"\\']","");
         if (firstToken.matches("\\d+\\/\\d+")) {
             return firstToken;
         }

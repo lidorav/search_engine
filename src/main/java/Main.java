@@ -3,7 +3,7 @@ import Model.Term;
 
 public class Main {
     public static void main(String[] args) {
-        ReadFile reader = new ReadFile("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\corpus");
+        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\corpus");
 
         reader.read();
         reader.print();

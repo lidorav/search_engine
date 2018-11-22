@@ -2,6 +2,8 @@ package Model.Parse;
 
 import Model.Term;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Functions;
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -21,8 +23,8 @@ public class Parser {
     public void parse(String docNum, String text) {
         this.docID = docNum;
         index = 0;
-        Pattern pattern = Pattern.compile("[ \\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
-        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.anyOf(",'`")).omitEmptyStrings();
+        Pattern pattern = Pattern.compile("[ \\*\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.forPredicate(Predicates.compose(Predicates.containsPattern("[\'\\,\\'\\`]"), Functions.toStringFunction()))).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
     }

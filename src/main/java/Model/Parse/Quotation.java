@@ -13,6 +13,8 @@ public class Quotation {
                 res = token.substring(1);
                 Parser.replaceToken(index, res);
                 while (!nextToken.contains("\"")) {
+                    if(i>=10)
+                        return "";
                     nextToken = Parser.getTokenFromList(index + i);
                     res = res + " " + nextToken;
                     i++;
