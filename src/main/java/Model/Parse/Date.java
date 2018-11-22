@@ -20,7 +20,7 @@ public class Date {
             return Month.valueOf(nextToken.toUpperCase()).getValue() + "-" + str;
         }
         //Month DD pattern
-        if(isMonth(str) && !isYear(nextToken)){
+        if(isMonth(str) && isDay(nextToken)){
             if(isShortMonth(str))
                 str=toLongMonth(str);
             Parser.index++;
@@ -47,7 +47,7 @@ public class Date {
 
     private static boolean isShortMonth(String token) {
         token = token.toLowerCase();
-        if (token.length() == 3 && (!token.equals("may")) || (!token.equals("mar")))
+        if (token.length() == 3 && (!token.equals("may")))
             return true;
 
         return false;
@@ -71,5 +71,9 @@ public class Date {
     }
     private static boolean allDigits(String s) {
         return s.replaceAll("\\d", "").equals("");
+    }
+
+    private static boolean isDay(String s){
+        return s.matches("^(([0]?[1-9])|([1-2][0-9])|(3[01]))$");
     }
 }

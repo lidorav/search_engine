@@ -38,9 +38,12 @@ public class Parser {
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, docID);
             } else {
-                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Text.parseText(index, token) + Quotation.parseQuotation(index,token);
-                if (term.isEmpty())
-                    term = token;
+                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index,token);
+                if (term.isEmpty()) {
+                    term = Text.parseText(index, token);
+                    if (term.isEmpty())
+                        term = token;
+                }
                 addTerm(term, docID);
             }
         }
