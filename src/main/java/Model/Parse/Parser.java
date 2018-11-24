@@ -1,33 +1,25 @@
 package Model.Parse;
 
-import Model.Term;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicates;
+import Model.PreTerm;
+import Model.PostTerm;
 import com.google.common.base.Splitter;
 import opennlp.tools.stemmer.PorterStemmer;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class Parser {
     public static int index;
     private static List<String> tokenList;
-    private static Map<String, Term> terms = new TreeMap<>();
+    private static HashMap<String,PreTerm> termsInDoc;
     private String docID;
     private StopWords stopWord = new StopWords();
     private  PorterStemmer porterStemmer = new PorterStemmer();
 
-
-    public Parser() {
-
-    }
 
     public void parse(String docNum, String text) {
         this.docID = docNum;
@@ -74,29 +66,29 @@ public class Parser {
 
     private void addTerm(String token, String docID) {
         token = porterStemmer.stem(token);
-        Term term = new Term(token, docID);
-        if (terms.containsKey(token))
-            terms.get(token).addShow(docID);
+        PreTerm term = new PreTerm(token,docID);
+        if (termsInDoc.containsKey(token))
+            termsInDoc.get(token).increaseTf();
         else
-            terms.put(token, term);
+            termsInDoc.put(token, term);
     }
 
     public static boolean checkExist(String token){
-        return terms.containsKey(token);
+        return termsInDoc.containsKey(token);
     }
 
     public static void replaceTerm(String currentTerm, String newTerm){
-        Term term = terms.get(currentTerm);
+        PreTerm term = termsInDoc.get(currentTerm);
         term.setName(newTerm);
-        terms.remove(currentTerm);
-        terms.put(newTerm,term);
+        termsInDoc.remove(currentTerm);
+        termsInDoc.put(newTerm,term);
     }
 
     public static void replaceToken (int index, String newToken){
         tokenList.set(index,newToken);
     }
 
-    public void printTerms(){
+    /*public void printTerms(){
         //create a file first
         PrintWriter outputfile = null;
         try {
@@ -116,7 +108,7 @@ public class Parser {
             e1.printStackTrace();
         }
 
-        for(String str: terms.keySet()){
+        for(String str: termsInDoc.keySet()){
             outputfile.println(str);
         }
         outputfile.close();
@@ -130,12 +122,12 @@ public class Parser {
         }
         //replace your System.out.print("your output");
 
-        for(Term term: terms.values()){
+        for(PreTerm term: terms.values()){
             ConcurrentHashMap<String, Integer> map = term.getDocTf();
                 outputfile.println(term);
             }
             outputfile.println();
             outputfile.println();
             outputfile.close();
-    }
+    }*/
 }

@@ -29,6 +29,7 @@ public class ReadFile {
        for(File dir: corpus.listFiles()){
            for(File file: dir.listFiles())
                try {
+                   System.out.println(file.getName());
                    Document doc = Jsoup.parse(file, "UTF-8");
                    Elements documents = doc.getElementsByTag("DOC");
                    for (Element element : documents) {
