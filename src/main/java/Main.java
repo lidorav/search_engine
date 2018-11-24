@@ -1,5 +1,5 @@
+import Model.Index.Posting;
 import Model.ReadFile;
-import Model.Term;
 
 import java.io.FileNotFoundException;
 
@@ -9,6 +9,8 @@ public class Main {
 
         reader.read();
         reader.print();
+
+        Posting posting = new Posting();
 
 
         //System.out.println(term);

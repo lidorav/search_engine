@@ -24,7 +24,7 @@ public class StopWords {
             // now dictionary is not recreated each time
             stopWordSet.add(file.next().trim());
         }
-        print();
+
     }
 
     public boolean isStopWord(String s){

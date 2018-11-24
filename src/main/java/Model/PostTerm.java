@@ -7,14 +7,15 @@ public class PostTerm {
     private int ptr;
 
 
-    public PostTerm(String name) {
+    public PostTerm(String name,int tf, int ptr) {
         this.name = name;
-        this.tf = 1;
+        this.tf = tf;
         this.df = 1;
+        this.ptr = ptr;
     }
 
-    public void increaseTf(){
-        this.tf++;
+    public void increaseTf(int tf){
+        this.tf +=tf;
     }
 
     public void increaseDf(){

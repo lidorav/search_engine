@@ -22,6 +22,7 @@ public class Parser {
 
 
     public void parse(String docNum, String text) {
+        termsInDoc = new HashMap<>();
         this.docID = docNum;
         index = 0;
         Pattern pattern = Pattern.compile("[ \\*\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
