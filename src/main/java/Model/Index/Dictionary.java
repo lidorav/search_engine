@@ -21,7 +21,7 @@ public class Dictionary {
         return dictionary.get(term);
     }
 
-    public int addExistTerm(String term, int tf){
+    public int updateTerm(String term, int tf){
         PostTerm pterm = dictionary.get(term);
         pterm.increaseTf(tf);
         pterm.increaseDf();

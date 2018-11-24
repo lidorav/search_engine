@@ -1,12 +1,10 @@
 package Model.Parse;
 
+import Model.Index.Indexer;
 import Model.PreTerm;
-import Model.PostTerm;
 import com.google.common.base.Splitter;
 import opennlp.tools.stemmer.PorterStemmer;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +15,15 @@ public class Parser {
     private static List<String> tokenList;
     private static HashMap<String,PreTerm> termsInDoc;
     private String docID;
-    private StopWords stopWord = new StopWords();
-    private  PorterStemmer porterStemmer = new PorterStemmer();
+    private StopWords stopWord;
+    private  PorterStemmer porterStemmer;
+    private Indexer indexer;
 
+    public Parser(){
+        stopWord = new StopWords();
+        porterStemmer = new PorterStemmer();
+        indexer = new Indexer();
+    }
 
     public void parse(String docNum, String text) {
         termsInDoc = new HashMap<>();
@@ -29,6 +33,7 @@ public class Parser {
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
+        indexer.index(termsInDoc);
     }
 
     private void classify() {

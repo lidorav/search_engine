@@ -10,7 +10,7 @@ public class Main {
         reader.read();
         reader.print();
 
-        Posting posting = new Posting();
+
 
 
         //System.out.println(term);
