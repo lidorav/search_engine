@@ -6,7 +6,6 @@ import com.google.common.base.Splitter;
 import opennlp.tools.stemmer.PorterStemmer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -38,16 +37,16 @@ public class Parser {
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
-        Thread thread = new Thread(() -> {
-            try {
-                semaphore.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            indexer.index(termsInDoc);
-            semaphore.release();
-        });
-        thread.start();
+        try {
+            semaphore.acquire();
+            Thread thread = new Thread(() -> {
+                indexer.index(termsInDoc);
+                semaphore.release();
+            });
+            thread.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void classify() {
