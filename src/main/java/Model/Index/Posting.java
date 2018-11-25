@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Posting {
 
-    private String path ="C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
+    private String path ="C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
     private Hashtable<String,Integer> postLines;
 
     public Posting(){
@@ -23,7 +23,7 @@ public class Posting {
             String fileName = i + ".txt";
             try {
                 new File(path+"\\"+fileName).createNewFile();
-                postLines.put(fileName,0);
+                postLines.put(fileName,-1);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -33,7 +33,7 @@ public class Posting {
             String fileName = alphabet + ".txt";
             try {
                 new File(path + "\\" + fileName).createNewFile();
-                postLines.put(fileName,0);
+                postLines.put(fileName,-1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,7 +59,7 @@ public class Posting {
 
         public void updateFile(char c, String docID, int tf, int ptr){
             String filename = c + ".txt";
-            int lineCounter = 1;
+            int lineCounter = 0;
             File file = new File(path + "\\" + filename);
             try {
                 List<String> lines = Files.readLines(file, Charsets.UTF_8);
@@ -69,7 +69,6 @@ public class Posting {
                         continue;
                     }
                     else{
-                        line = line.replaceAll("\\r|\\n", "");
                          lines.set(lineCounter,line+docID + ":" + tf + ",");
                          break;
                     }
