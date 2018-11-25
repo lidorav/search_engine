@@ -16,7 +16,7 @@ public class Posting {
     private String path ="C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
     private Hashtable<String,Integer> postLines;
 
-    public Posting(){
+    public Posting() {
         try {
             FileUtils.deleteDirectory(new File(path));
         } catch (IOException e) {
@@ -24,36 +24,40 @@ public class Posting {
         }
         postLines = new Hashtable<>();
         new File(path).mkdirs();
-        for(int i=0 ; i<=9 ; i++){
+        for (int i = 0; i <= 9; i++) {
             String fileName = i + ".txt";
             try {
-                new File(path+"\\"+fileName).createNewFile();
-                postLines.put(fileName,-1);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        for(char alphabet = 'a'; alphabet <='z'; alphabet++ ) {
-            String fileName = alphabet + ".txt";
-            try {
                 new File(path + "\\" + fileName).createNewFile();
-                postLines.put(fileName,-1);
+                postLines.put(fileName, -1);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
+            for (char alphabet2 = 'a'; alphabet2 <= 'z'; alphabet2++) {
+                String fileName = alphabet + ".txt";
+                String fileName2 = alphabet+alphabet2 +".txt";
+                try {
+                    new File(path + "\\" + fileName).createNewFile();
+                    new File(path + "\\" + fileName2).createNewFile();
+                    postLines.put(fileName, -1);
+                    postLines.put(fileName2, -1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+            }
+            try {
+                new File(path + "\\" + "symbols.txt").createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            postLines.put("symbols.txt", -1);
         }
-        try {
-            new File(path+"\\"+"symbols.txt").createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        postLines.put("symbols.txt",-1);
     }
-
-    public int addToFile(char c, String docID, int tf) {
-            String filename = getFileName(c);
+    public int addToFile(String fileName, String docID, int tf) {
+            String filename = getFileName(fileName);
             int ptr = -1;
             File file = new File(path + "\\" + filename);
             CharSink chs = Files.asCharSink(
@@ -70,8 +74,8 @@ public class Posting {
         return ptr;
     }
 
-        public void updateFile(char c, String docID, int tf, int ptr){
-            String filename = getFileName(c);
+        public void updateFile(String fileName, String docID, int tf, int ptr){
+            String filename = getFileName(fileName);
             int lineCounter = 0;
             File file = new File(path + "\\" + filename);
             try {
@@ -93,18 +97,17 @@ public class Posting {
 
         }
 
-        private String getFileName(char c){
-            String filename;
-            if(isSymbol(c)){
-                filename = "symbols.txt";
+        private String getFileName(String fileName){
+            if(isSymbol(fileName)){
+                fileName = "symbols.txt";
             }
             else
-                filename = Character.toLowerCase(c) + ".txt";
-            return filename;
+                fileName = fileName.toLowerCase() + ".txt";
+            return fileName;
         }
 
-        private boolean isSymbol (char c){
-        if (!Character.isDigit(c) && !Character.isLetter(c))
+        private boolean isSymbol (String fileName){
+        if (!Character.isDigit(fileName.charAt(0)) && !Character.isLetter(fileName.charAt(0)))
             return true;
         return false;
         }
