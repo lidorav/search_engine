@@ -34,6 +34,7 @@ public class Parser {
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
         indexer.index(termsInDoc);
+        
     }
 
     private void classify() {
