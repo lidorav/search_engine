@@ -13,10 +13,15 @@ import java.util.List;
 
 public class Posting {
 
-    private String path ="C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
+    private String path ="C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
     private Hashtable<String,Integer> postLines;
 
     public Posting(){
+        try {
+            FileUtils.deleteDirectory(new File(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         postLines = new Hashtable<>();
         new File(path).mkdirs();
         for(int i=0 ; i<=9 ; i++){
@@ -39,26 +44,45 @@ public class Posting {
             }
 
         }
+        try {
+            new File(path+"\\"+"symbols.txt").createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        postLines.put("symbols.txt",-1);
     }
 
     public int addToFile(char c, String docID, int tf) {
-            String filename = Character.toLowerCase(c) + ".txt";
+        String filename="";
+        if(isSymbol(c)){
+             filename = "symbols.txt";
+        }
+        else
+             filename = Character.toLowerCase(c) + ".txt";
+
             int ptr = -1;
             File file = new File(path + "\\" + filename);
             CharSink chs = Files.asCharSink(
                     file, Charsets.UTF_8, FileWriteMode.APPEND);
             try {
                 chs.write(docID + ":" + tf + ",\r\n");
-                ptr = postLines.get(filename)+1;
-                postLines.put(filename,ptr);
+                ptr = postLines.get(filename) + 1;
+                postLines.put(filename, ptr);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
         return ptr;
     }
 
         public void updateFile(char c, String docID, int tf, int ptr){
-            String filename = Character.toLowerCase(c) + ".txt";
+            String filename="";
+            if(isSymbol(c)){
+                filename =  "symbols.txt";
+            }
+            else
+                filename = Character.toLowerCase(c) + ".txt";
             int lineCounter = 0;
             File file = new File(path + "\\" + filename);
             try {
@@ -78,6 +102,12 @@ public class Posting {
                 e.printStackTrace();
             }
 
+        }
+
+        public boolean isSymbol (char c){
+        if (!Character.isDigit(c) && !Character.isLetter(c))
+            return true;
+        return false;
         }
 }
 
