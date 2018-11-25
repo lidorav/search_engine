@@ -2,6 +2,8 @@ package Model.Index;
 
 import Model.PostTerm;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 public class Dictionary {
@@ -31,6 +33,21 @@ public class Dictionary {
         return ptr;
     }
 
+
+    public void printDic(){
+        PrintWriter outputfile = null;
+        try {
+            outputfile = new PrintWriter("dic"+"-1");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        for (PostTerm p:dictionary.values()
+                ) {
+            System.out.println(p);
+        }
+        outputfile.close();
+    }
 
 
 
