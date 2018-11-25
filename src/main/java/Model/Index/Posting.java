@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Posting {
 
-    private String path ="C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
+    private String path ="C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
     private Hashtable<String,Integer> postLines;
 
     public Posting(){
@@ -53,13 +53,7 @@ public class Posting {
     }
 
     public int addToFile(char c, String docID, int tf) {
-        String filename="";
-        if(isSymbol(c)){
-             filename = "symbols.txt";
-        }
-        else
-             filename = Character.toLowerCase(c) + ".txt";
-
+            String filename = getFileName(c);
             int ptr = -1;
             File file = new File(path + "\\" + filename);
             CharSink chs = Files.asCharSink(
@@ -77,12 +71,7 @@ public class Posting {
     }
 
         public void updateFile(char c, String docID, int tf, int ptr){
-            String filename="";
-            if(isSymbol(c)){
-                filename =  "symbols.txt";
-            }
-            else
-                filename = Character.toLowerCase(c) + ".txt";
+            String filename = getFileName(c);
             int lineCounter = 0;
             File file = new File(path + "\\" + filename);
             try {
@@ -104,7 +93,17 @@ public class Posting {
 
         }
 
-        public boolean isSymbol (char c){
+        private String getFileName(char c){
+            String filename;
+            if(isSymbol(c)){
+                filename = "symbols.txt";
+            }
+            else
+                filename = Character.toLowerCase(c) + ".txt";
+            return filename;
+        }
+
+        private boolean isSymbol (char c){
         if (!Character.isDigit(c) && !Character.isLetter(c))
             return true;
         return false;

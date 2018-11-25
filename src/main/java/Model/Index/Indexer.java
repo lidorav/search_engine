@@ -1,12 +1,7 @@
 package Model.Index;
 
-
-import Model.Index.Dictionary;
-import Model.Index.Posting;
 import Model.PreTerm;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 //מקשר בין המילון לפוסטינג
 public class Indexer {
@@ -19,15 +14,14 @@ public class Indexer {
          posting = new Posting();
     }
 
-    public void index(HashMap<String , PreTerm> preDictionary){
-        for (Map.Entry<String,PreTerm> entry  : preDictionary.entrySet()
-             ) {
+    public void index(ConcurrentHashMap<String , PreTerm> preDictionary){
+        for (ConcurrentHashMap.Entry<String,PreTerm> entry  : preDictionary.entrySet()) {
             String token = entry.getKey();
             String docID = entry.getValue().getDocID();
             int tf = entry.getValue().getTf();
             //check if already in dictionary
             if(dictionary.isInDictionary(token)){
-               int currPtr = dictionary.updateTerm(entry.getKey(),entry.getValue().getTf());
+               int currPtr = dictionary.updateTerm(token,tf);
                posting.updateFile(token.charAt(0),docID,tf,currPtr);
             }
             //not in dictionary
@@ -36,5 +30,9 @@ public class Indexer {
                 dictionary.addNewTerm(token,tf,newPtr);
             }
         }
+    }
+
+    public void printDic(){
+        dictionary.printDic();
     }
 }

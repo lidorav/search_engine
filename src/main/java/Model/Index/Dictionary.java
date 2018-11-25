@@ -4,11 +4,11 @@ import Model.PostTerm;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Dictionary {
 
-    private HashMap<String, PostTerm> dictionary = new HashMap<>();
+    private ConcurrentHashMap<String, PostTerm> dictionary = new ConcurrentHashMap<>();
 
     public boolean isInDictionary(String term){
         return dictionary.containsKey(term);
@@ -37,14 +37,14 @@ public class Dictionary {
     public void printDic(){
         PrintWriter outputfile = null;
         try {
-            outputfile = new PrintWriter("dic"+"-1");
+            outputfile = new PrintWriter("C:\\Users\\nkutsky\\Desktop\\Retrival\\Dic.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         for (PostTerm p:dictionary.values()
                 ) {
-            System.out.println(p);
+            outputfile.println(p);
         }
         outputfile.close();
     }
