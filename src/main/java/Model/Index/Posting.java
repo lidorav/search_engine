@@ -42,7 +42,7 @@ public class Posting {
     }
 
     public int addToFile(char c, String docID, int tf) {
-            String filename = c + ".txt";
+            String filename = Character.toLowerCase(c) + ".txt";
             int ptr = -1;
             File file = new File(path + "\\" + filename);
             CharSink chs = Files.asCharSink(
@@ -58,7 +58,7 @@ public class Posting {
     }
 
         public void updateFile(char c, String docID, int tf, int ptr){
-            String filename = c + ".txt";
+            String filename = Character.toLowerCase(c) + ".txt";
             int lineCounter = 0;
             File file = new File(path + "\\" + filename);
             try {

@@ -8,6 +8,7 @@ import opennlp.tools.stemmer.PorterStemmer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.regex.Pattern;
 
 public class Parser {
@@ -18,11 +19,14 @@ public class Parser {
     private StopWords stopWord;
     private  PorterStemmer porterStemmer;
     private Indexer indexer;
+    private static Semaphore semaphore;
+
 
     public Parser(){
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
+        semaphore = new Semaphore(1);
     }
 
     public void parse(String docNum, String text) {
@@ -33,9 +37,16 @@ public class Parser {
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
-        indexer.index(termsInDoc);
+        new Thread(() -> {
+            try {
+                semaphore.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            indexer.index(termsInDoc);
+            semaphore.release();
+        }).start();
     }
-
     private void classify() {
         for (; index < tokenList.size(); index++) {
             String token = getTokenFromList(index);
