@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 public class ReadFile {
     private File corpus;
@@ -16,11 +17,13 @@ public class ReadFile {
     private HashMap<String, Model.Document> docMap;
 
 
+
     //constructor
     public ReadFile(String path){
         corpus = new File(path);
         parser = new Parser();
         docMap = new HashMap<>();
+        //semaphore = new Semaphore(1);
     }
 
     public void read() {
@@ -45,14 +48,11 @@ public class ReadFile {
                         }
                         docMap.put(docNum, new Model.Document(file.getName(), docTitle, i++, docCity));
                         String data = element.getElementsByTag("TEXT").get(0).text();
-                        parser.parse(docNum, data);
+                        parser.parse(docNum,data);
                     }
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
         }
-
     }
-
 
     public void print() {
         parser.printDic();
