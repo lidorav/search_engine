@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 
 public class Main {
     public static void main(String[] args){
-        ReadFile reader = new ReadFile("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\corpus");
+        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\Retrival\\corpus");
         long startTime = System.nanoTime();
         reader.read();
         reader.print();

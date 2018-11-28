@@ -4,11 +4,13 @@ import Model.Index.Indexer;
 import Model.PreTerm;
 import com.google.common.base.Splitter;
 import opennlp.tools.stemmer.PorterStemmer;
+import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class Parser {
@@ -19,34 +21,29 @@ public class Parser {
     private StopWords stopWord;
     private PorterStemmer porterStemmer;
     private Indexer indexer;
-    private static Semaphore semaphore;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 
     public Parser() {
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
-        semaphore = new Semaphore(1);
+    }
+
+    public void shutDownExecutor(){
+        executor.shutdown();
     }
 
     public void parse(String docNum, String text) {
         termsInDoc = new ConcurrentHashMap<>();
         this.docID = docNum;
         index = 0;
-        Pattern pattern = Pattern.compile("[ \\*\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        Pattern pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
-        try {
-            semaphore.acquire();
-            Thread thread = new Thread(() -> {
-                indexer.index(termsInDoc);
-                semaphore.release();
-            });
-            thread.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        //executor.execute(() -> indexer.index(termsInDoc));
+        indexer.index(termsInDoc);
     }
 
     private void classify() {
@@ -84,6 +81,8 @@ public class Parser {
     }
 
     private void addTerm(String token, String docID) {
+        if(token.length()==1 && !StringUtil.isNumeric(token))
+            return;
         token = porterStemmer.stem(token);
         PreTerm term = new PreTerm(token, docID);
         if (termsInDoc.containsKey(token))
@@ -105,6 +104,11 @@ public class Parser {
 
     public static void replaceToken(int index, String newToken) {
         tokenList.set(index, newToken);
+    }
+
+    public void deployFile(){
+        //executor.execute(() -> indexer.addChunckToFile());
+        indexer.addChunckToFile();
     }
 
     public void printDic() {
