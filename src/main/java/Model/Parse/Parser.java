@@ -91,17 +91,6 @@ public class Parser {
             termsInDoc.put(token, term);
     }
 
-    public static boolean checkExist(String token) {
-        return termsInDoc.containsKey(token);
-    }
-
-    public static void replaceTerm(String currentTerm, String newTerm) {
-        PreTerm term = termsInDoc.get(currentTerm);
-        term.setName(newTerm);
-        termsInDoc.remove(currentTerm);
-        termsInDoc.put(newTerm, term);
-    }
-
     public static void replaceToken(int index, String newToken) {
         tokenList.set(index, newToken);
     }
