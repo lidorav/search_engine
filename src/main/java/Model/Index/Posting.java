@@ -16,7 +16,7 @@ public class Posting {
     private String path ="C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
     private Hashtable<String,Integer> postLines;
 
-    public Posting() {
+    public Posting() throws IOException {
         try {
             FileUtils.deleteDirectory(new File(path));
         } catch (IOException e) {
@@ -24,20 +24,19 @@ public class Posting {
         }
         postLines = new Hashtable<>();
         new File(path).mkdirs();
-        for (int i = 0; i <= 9; i++) {
-            String fileName = i + ".txt";
-            try {
-                new File(path + "\\" + fileName).createNewFile();
-                postLines.put(fileName, -1);
+        postCreate099();
+        postCreateAZ();
+        postCreateLetterNumber();
+        postCreateNumberLetter();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+
+    }
+
+    private void postCreateAZ(){
         for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
             for (char alphabet2 = 'a'; alphabet2 <= 'z'; alphabet2++) {
                 String fileName = alphabet + ".txt";
-                String fileName2 = alphabet+alphabet2 +".txt";
+                String fileName2 = "" + alphabet + alphabet2 +".txt";
                 try {
                     new File(path + "\\" + fileName).createNewFile();
                     new File(path + "\\" + fileName2).createNewFile();
@@ -46,7 +45,6 @@ public class Posting {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
             try {
                 new File(path + "\\" + "symbols.txt").createNewFile();
@@ -55,7 +53,60 @@ public class Posting {
             }
             postLines.put("symbols.txt", -1);
         }
+
     }
+
+    private void postCreate099() {
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
+                String fileName = "" + i + j + ".txt";
+                try {
+                    new File(path + "\\" + fileName).createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                postLines.put(fileName, -1);
+            }
+            postLines.put("" + i , -1);
+        }
+    }
+
+        private void postCreateNumberLetter () {
+            String fileName;
+            for (int i = 0; i <= 9; i++) {
+                for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
+                    fileName = "" + i + alphabet + ".txt";
+                    //    String fileName2 = "" + alphabet + i + ".txt";
+                    try {
+                        new File(path + "\\" + fileName).createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    postLines.put(fileName, -1);
+                }
+
+            }
+
+        }
+
+        private void postCreateLetterNumber () {
+            String fileName;
+            for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
+                for (int i = 0; i <= 9; i++) {
+                    fileName = "" + alphabet + i + ".txt";
+                    try {
+                        new File(path + "\\" + fileName).createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    postLines.put(fileName, -1);
+                }
+
+            }
+
+        }
+
+
     public int addToFile(String fileName, String docID, int tf) {
             String filename = getFileName(fileName);
             int ptr = -1;
@@ -98,7 +149,9 @@ public class Posting {
         }
 
         private String getFileName(String fileName){
-            if(isSymbol(fileName)){
+        if(fileName.length() == 2)
+        fileName = intoPlace(fileName);
+        if(isSymbol(fileName)){
                 fileName = "symbols.txt";
             }
             else
@@ -110,6 +163,17 @@ public class Posting {
         if (!Character.isDigit(fileName.charAt(0)) && !Character.isLetter(fileName.charAt(0)))
             return true;
         return false;
+        }
+
+        private String intoPlace(String fileName){
+            if(isSymbol(fileName))
+                return fileName.substring(1,1);
+
+            if( !Character.isDigit(fileName.charAt(1)) && !Character.isLetter(fileName.charAt(1))){
+                return fileName.substring(0,1);
+            }
+
+            return fileName ;
         }
 }
 
