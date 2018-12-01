@@ -12,20 +12,19 @@ public class Combo {
             String nextToken = (Parser.getTokenFromList(index+1));
             while (Character.isUpperCase(nextToken.charAt(0))){
                 res =  res + " " + nextToken;
-                Parser.replaceToken(index + counter , token + "!");
+                Parser.replaceToken(index + counter , nextToken + "!");
                 counter ++;
                 nextToken = (Parser.getTokenFromList(index+counter));
-
             }
             if(counter>1) {
                 Parser.replaceToken(index, token + "!");
                 Parser.index--;
+                //return a lower case word
+                return res.toLowerCase();
             }
         }
-        return res;
+        return "";
     }
-
-
 
 
 }
