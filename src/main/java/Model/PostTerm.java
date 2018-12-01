@@ -5,13 +5,15 @@ public class PostTerm {
     private int df;
     private int tf;
     private int ptr;
+    private boolean inTitle;
 
-
-    public PostTerm(String name,int tf, int ptr) {
-        this.name = name;
-        this.tf = tf;
+    public PostTerm(PreTerm preTerm, int ptr){
+        this.name = preTerm.getName();
+        this.tf = preTerm.getTf();
         this.df = 1;
         this.ptr = ptr;
+        this.inTitle = preTerm.getInTitle();
+
     }
 
     public void increaseTf(int tf){

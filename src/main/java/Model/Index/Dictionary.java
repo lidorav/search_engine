@@ -15,8 +15,8 @@ public class Dictionary {
         return dictionary.containsKey(term);
     }
 
-    public void addNewTerm(String term, int tf, int ptr) {
-        dictionary.put(term, new PostTerm(term, tf, ptr));
+    public void addNewTerm(PreTerm preTerm, int ptr) {
+        dictionary.put(preTerm.getName(), new PostTerm(preTerm, ptr));
 
     }
 

@@ -38,6 +38,8 @@ public class ReadFile {
                         String docTitle="";
                         String docNum = element.getElementsByTag("DOCNO").get(0).text();
                         Elements docTitleElement = element.getElementsByTag("TI");
+                        if(docTitleElement.isEmpty())
+                            docTitleElement = element.getElementsByTag("HEADLINE");
                         if(!docTitleElement.isEmpty()){
                             docTitle = docTitleElement.get(0).text();
                         }
