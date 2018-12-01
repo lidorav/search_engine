@@ -38,7 +38,6 @@ public class Hyphen {
                 String[] parts = secToken.split("-");
                 res = ANumbers.parseNumber(token,parts[0].toLowerCase());
                 res = res + "-" + parts[1];
-                Parser.index++;
                 return parseHyphen(index+1,res);
             }
         }

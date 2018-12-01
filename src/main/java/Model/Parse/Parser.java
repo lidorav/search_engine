@@ -28,7 +28,7 @@ public class Parser {
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
-        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\/+]|-{2}|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?]|-{2}|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
     }
 
     public void parse(String docNum, String text) {
@@ -86,9 +86,9 @@ public class Parser {
         //Date.dateParse(index, token) + Combo.parseCombo(index, token) +
         // Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token)
         String res= Date.dateParse(index, token);
-        if(res.isEmpty()){
-            res= Combo.parseCombo(index, token);
-        }
+       //if(res.isEmpty()){
+       //     res= Combo.parseCombo(index, token);
+        //}
         if(res.isEmpty()){
             res = Hyphen.parseHyphen(index, token);
         }

@@ -26,8 +26,7 @@ public class ANumbers {
         public static String parseNumber (String firstToken, String secToken){
             String fraction = "";
             double number = Double.parseDouble(firstToken);
-            if(number<1000)
-                return "" + round(number,2);
+
             if ((number >= 1000) && (number < MILLION))
                 return round(number / 1000,2) + "K";
             if ((number >= MILLION) && (number < BILLION))
@@ -54,7 +53,8 @@ public class ANumbers {
                 Parser.index++;
                 fraction = " " + secToken;
             }
-            return number + fraction;
+            return round(number,2) + fraction;
+
         }
 
     private static double round(double value, int places) {
