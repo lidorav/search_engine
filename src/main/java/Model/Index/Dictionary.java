@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Dictionary {
 
-    private static ConcurrentHashMap<String, PostTerm> dictionary = new ConcurrentHashMap<>();
+    private static volatile ConcurrentHashMap<String, PostTerm> dictionary = new ConcurrentHashMap<>();
 
     public boolean isInDictionary(String term) {
         return dictionary.containsKey(term);

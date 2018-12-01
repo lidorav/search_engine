@@ -4,11 +4,12 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Posting {
 
     private String path = "C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
-    private Hashtable<String, Integer> postLines;
+    private ConcurrentHashMap<String, Integer> postLines;
 
     public Posting() {
         try {
@@ -16,7 +17,7 @@ public class Posting {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        postLines = new Hashtable<>();
+        postLines = new ConcurrentHashMap<>();
         new File(path).mkdirs();
         for (int i = 0; i <= 9; i++) {
             String fileName = i + ".txt";
@@ -120,16 +121,21 @@ public class Posting {
     }
 
     private boolean isSymbol(char c) {
-        if (!Character.isDigit(c) && !Character.isLetter(c))
+        if (!Character.isDigit(c) && !(c >= 'a' && c <= 'z'))
             return true;
         return false;
     }
 
     public int getNextLine(char c) {
         String filename = getFileName(c);
-        int ptr = postLines.get(filename) + 1;
-        postLines.put(filename, ptr);
-        return ptr;
+        try {
+            int ptr = postLines.get(filename) + 1;
+            postLines.put(filename, ptr);
+            return ptr;
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return 0;
     }
 }
 
