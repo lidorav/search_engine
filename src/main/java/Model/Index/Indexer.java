@@ -3,7 +3,6 @@ package Model.Index;
 import Model.PreTerm;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,32 +12,27 @@ public class Indexer {
    private Posting posting;
    private HashMap<Character,TreeMap<Integer,String>> updateTermsToWrite;
    private HashMap<Character,TreeMap<Integer,String>> newTermsToWrite;
-   private HashSet<String> test;
 
     public Indexer() {
          dictionary = new Dictionary();
          posting = new Posting();
-         test = new HashSet<>();
          initalize();
     }
 
     public void index(ConcurrentHashMap<String , PreTerm> preDictionary){
         for (ConcurrentHashMap.Entry<String,PreTerm> entry  : preDictionary.entrySet()) {
             char fileName;
-            String pterm = entry.getKey();
-            fileName = Character.toLowerCase(pterm.charAt(0));
-            String docID = entry.getValue().getDocID();
-            if(!test.contains(docID))
-                test.add(docID);
-            int tf = entry.getValue().getTf();
+            String ptermName = entry.getKey();
+            fileName = Character.toLowerCase(ptermName.charAt(0));
+            PreTerm ptermVal  = entry.getValue();
             //check if already in dictionary
-            if(dictionary.isInDictionary(pterm)){
-               int currPtr = dictionary.updateTerm(pterm,tf);
-               insertToUpdateList(fileName,currPtr,docID,tf);
+            if(dictionary.isInDictionary(ptermName)){
+               int currPtr = dictionary.updateTerm(ptermName,ptermVal.getTf());
+               insertToUpdateList(fileName,currPtr,ptermVal);
             }
             //not in dictionary
             else{
-                insertToNewList(fileName,docID,pterm,tf);
+                insertToNewList(fileName,ptermVal);
             }
         }
     }
@@ -64,7 +58,9 @@ public class Indexer {
         newTermsToWrite.put('*',new TreeMap<>());
     }
 
-    private void insertToUpdateList(char fileName,int ptr, String docID, int tf) {
+    private void insertToUpdateList(char fileName,int ptr, PreTerm preTerm) {
+        String docID = preTerm.getDocID();
+        int tf = preTerm.getTf();
         TreeMap<Integer, String> tree;
         if(updateTermsToWrite.containsKey(fileName)) {
             tree = updateTermsToWrite.get(fileName);
@@ -85,7 +81,9 @@ public class Indexer {
         }
     }
 
-    private void insertToNewList(char fileName, String docID,String pterm, int tf) {
+    private void insertToNewList(char fileName, PreTerm preTerm) {
+        String docID = preTerm.getDocID();
+        int tf = preTerm.getTf();
         TreeMap<Integer, String> tree;
         if (newTermsToWrite.containsKey(fileName)) {
             tree = newTermsToWrite.get(fileName);
@@ -93,7 +91,7 @@ public class Indexer {
             tree = newTermsToWrite.get('*');
         }
         int newPtr = posting.getNextLine(fileName);
-        dictionary.addNewTerm(pterm, tf, newPtr);
+        dictionary.addNewTerm(preTerm, newPtr);
         String newLine = docID + ":" + tf + ",\r\n";
         tree.put(newPtr, newLine);
         newTermsToWrite.replace(fileName, tree);
@@ -101,6 +99,5 @@ public class Indexer {
 
         public void printDic(){
         dictionary.printDic();
-        System.out.println(test.size());
     }
 }

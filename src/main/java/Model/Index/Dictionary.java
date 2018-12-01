@@ -15,8 +15,8 @@ public class Dictionary {
         return dictionary.containsKey(term);
     }
 
-    public void addNewTerm(String term, int tf, int ptr) {
-        dictionary.put(term, new PostTerm(term, tf, ptr));
+    public void addNewTerm(PreTerm preTerm, int ptr) {
+        dictionary.put(preTerm.getName(), new PostTerm(preTerm, ptr));
 
     }
 
@@ -38,7 +38,7 @@ public class Dictionary {
     public void printDic() {
         PrintWriter outputfile = null;
         try {
-            outputfile = new PrintWriter("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Dic.txt");
+            outputfile = new PrintWriter("C:\\Users\\nkutsky\\Desktop\\Retrival\\Dic.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

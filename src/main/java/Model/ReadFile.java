@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 public class ReadFile {
     private File corpus;
     private Parser parser;
-    private HashMap<String, Model.Document> docMap;
+    private static HashMap<String, Model.Document> docMap;
 
 
 
@@ -38,6 +38,8 @@ public class ReadFile {
                         String docTitle="";
                         String docNum = element.getElementsByTag("DOCNO").get(0).text();
                         Elements docTitleElement = element.getElementsByTag("TI");
+                        if(docTitleElement.isEmpty())
+                            docTitleElement = element.getElementsByTag("HEADLINE");
                         if(!docTitleElement.isEmpty()){
                             docTitle = docTitleElement.get(0).text();
                         }
@@ -54,7 +56,9 @@ public class ReadFile {
                         String data = element.getElementsByTag("TEXT").get(0).text();
                         parser.parse(docNum, data);
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    System.out.println(e + "error");
+                }
             }
             parser.deployFile();
         }
@@ -63,5 +67,9 @@ public class ReadFile {
 
     public void print() {
         parser.printDic();
+    }
+
+    public static Model.Document getDoc(String docID){
+        return docMap.get(docID);
     }
 }

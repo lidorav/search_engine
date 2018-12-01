@@ -4,6 +4,7 @@ public class PreTerm {
     private String name;
     private String docID;
     private int tf;
+    private boolean inTitle;
 
     public PreTerm(String name, String docID) {
         this.name = name;
@@ -29,5 +30,13 @@ public class PreTerm {
 
     public void increaseTf() {
         this.tf++;
+    }
+
+    public void setInTitle(boolean inTitle){
+        this.inTitle = inTitle;
+    }
+
+    public boolean getInTitle(){
+        return inTitle;
     }
 }
