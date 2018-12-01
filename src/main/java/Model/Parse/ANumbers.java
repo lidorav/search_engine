@@ -1,43 +1,54 @@
 package Model.Parse;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class ANumbers {
     final static long MILLION = 1000000L;
     final static long BILLION = 1000000000L;
     final static long TRILLION = 1000000000000L;
 
     public static String parseNumber(int index, String firstToken) {
-        if(firstToken.contains("\"") && firstToken.length()>1)
-            firstToken = firstToken.replace("\"","");
-        if (firstToken.matches("\\d+\\/\\d+")) {
+        String res;
+            if (firstToken.contains("\"") && firstToken.length() > 1)
+                firstToken = firstToken.replace("\"", "");
+            if (firstToken.matches("\\d+\\/\\d+")) {
+                return firstToken;
+            }
+            try {
+                String secToken = Parser.getTokenFromList(index + 1).toLowerCase();
+                res = parseNumber(firstToken, secToken);
+            } catch (Exception e) {
             return firstToken;
         }
-
-        String fraction = "";
-        try {
+        return res;
+    }
+        public static String parseNumber (String firstToken, String secToken){
+            String fraction = "";
             double number = Double.parseDouble(firstToken);
+            if(number<1000)
+                return "" + round(number,2);
             if ((number >= 1000) && (number < MILLION))
-                return number / 1000 + "K";
+                return round(number / 1000,2) + "K";
             if ((number >= MILLION) && (number < BILLION))
-                return number / MILLION + "M";
+                return round(number / MILLION,2) + "M";
             if (number >= BILLION)
-                return number / BILLION + "B";
-
-            String secToken = Parser.getTokenFromList(index + 1).toLowerCase();
+                return round(number / BILLION,2) + "B";
             if (secToken.equals("thousand")) {
                 Parser.index++;
-                return firstToken + "K";
+                return round(number,2) + "K";
             }
             if (secToken.equals("million")) {
                 Parser.index++;
-                return firstToken + "M";
+                return round(number,2) + "M";
             }
             if (secToken.equals("billion")) {
                 Parser.index++;
-                return firstToken + "B";
+                return round(number,2) + "B";
             }
             if (secToken.equals("trillion")) {
                 Parser.index++;
-                return number * (TRILLION / BILLION) + "B";
+                return round(number,2) * (TRILLION / BILLION) + "B";
             }
             if (secToken.matches("\\d+\\/\\d+")) {
                 Parser.index++;
@@ -45,35 +56,10 @@ public class ANumbers {
             }
             return number + fraction;
         }
-        catch (Exception e) {
-            return firstToken;
-        }
-    }
 
-    public static String parseNumber(String firstToken, String secToken){
-        String fraction= "";
-        double number = Double.parseDouble(firstToken);
-        if ((number >= 1000) && (number < MILLION))
-            return number/1000 + "K";
-        if((number >= MILLION) && (number < BILLION))
-            return number/MILLION + "M";
-        if(number >= BILLION)
-            return number/BILLION + "B";
-        if(secToken.equals("thousand")){
-            return firstToken + "K";
-        }
-        if(secToken.equals("million")){
-            return firstToken + "M";
-        }
-        if(secToken.equals("billion")){
-            return firstToken + "B";
-        }
-        if(secToken.equals("trillion")){
-            return number*(TRILLION/BILLION) + "B";
-        }
-        if(secToken.matches("\\d+\\/\\d+")) {
-            fraction = " " + secToken;
-        }
-        return number + fraction;
+    private static double round(double value, int places) {
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
