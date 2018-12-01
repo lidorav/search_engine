@@ -57,7 +57,7 @@ public class Parser {
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, docID);
             } else {
-                String term = Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token);
+                String term = Date.dateParse(index, token) + Combo.parseCombo(index, token) + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token);
                 if (term.isEmpty()) {
                     term = Text.parseText(index, token);
                     if (term.isEmpty())
@@ -70,7 +70,7 @@ public class Parser {
 
     public static String getTokenFromList(int index) {
         if (index >= tokenList.size())
-            return tokenList.get(tokenList.size() - 1);
+            return "eof";
         String token = tokenList.get(index);
         token = token.replaceAll("[,//']", "");
         if (!token.isEmpty()) {
