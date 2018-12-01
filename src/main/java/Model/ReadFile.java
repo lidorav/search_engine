@@ -7,9 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 public class ReadFile {
     private File corpus;

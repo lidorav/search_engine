@@ -38,7 +38,20 @@ public class Parser {
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
+        updateDoc();
         indexer.index(termsInDoc);
+    }
+
+    private void updateDoc() {
+        int currentMaxValue = Integer.MIN_VALUE;
+        Document doc = ReadFile.getDoc(docID);
+        doc.setMaxTf(termsInDoc.size());
+        for (PreTerm preTerm : termsInDoc.values()){
+            if (preTerm.getTf() > currentMaxValue) {
+                currentMaxValue = preTerm.getTf();
+            }
+        }
+        doc.setMaxTf(currentMaxValue);
     }
 
     private void classify() {

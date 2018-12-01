@@ -30,6 +30,14 @@ public class Document {
         return fileName;
     }
 
+    public void setMaxTf(int maxTf) {
+        this.maxTf = maxTf;
+    }
+
+    public void setUniqueTf(int uniqueTf) {
+        this.uniqueTf = uniqueTf;
+    }
+
     public String getTitle() {
         return title;
     }
