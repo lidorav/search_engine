@@ -7,6 +7,10 @@ public class Hyphen {
         String part1;
         String part2;
         if (token.contains("-")) {
+            if(token.charAt(0)=='-' || token.charAt(token.length()-1)=='-') {
+                Parser.replaceToken(index, token.replace("-",""));
+                return "";
+            }
             if (token.matches(".*\\d+.*")) {
                 String[] parts = token.split("-");
                 if (parts[0].chars().allMatch(Character::isDigit)) {
@@ -27,6 +31,10 @@ public class Hyphen {
         if(token.chars().allMatch(Character::isDigit)){
             String secToken = Parser.getTokenFromList(index+1);
             if(secToken.contains("-")){
+                if(secToken.charAt(0)=='-' || secToken.charAt(secToken.length()-1)=='-') {
+                    Parser.replaceToken(index, secToken.replace("-",""));
+                    return "";
+                }
                 String[] parts = secToken.split("-");
                 res = ANumbers.parseNumber(token,parts[0].toLowerCase());
                 res = res + "-" + parts[1];

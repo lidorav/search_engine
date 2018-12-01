@@ -4,18 +4,13 @@ import Model.Document;
 import Model.Index.Indexer;
 import Model.PreTerm;
 import Model.ReadFile;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class Parser {
@@ -26,9 +21,7 @@ public class Parser {
     private StopWords stopWord;
     private PorterStemmer porterStemmer;
     private Indexer indexer;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Pattern pattern;
-    private List<String> delimiters;
 
 
     public Parser() {
@@ -36,16 +29,14 @@ public class Parser {
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
         pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\/+]|-{2}|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
-        delimiters = new ArrayList<String>(Arrays.asList(",",".","/'",""));
     }
 
     public void parse(String docNum, String text) {
         termsInDoc = new ConcurrentHashMap<>();
         this.docID = docNum;
         index = 0;
-        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.none()).omitEmptyStrings();
+        Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
-        tokenList.removeIf(n-> (delimiters.contains(n)));
         classify();
         indexer.index(termsInDoc);
     }
@@ -114,8 +105,10 @@ public class Parser {
         token = token.replaceAll("[,\\']", "");
         if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
-                return token.substring(0, token.length() - 1);
+                 token.substring(0, token.length() - 1);
         }
+        if(token.isEmpty())
+            token = getTokenFromList(index+1);
         return token;
     }
 

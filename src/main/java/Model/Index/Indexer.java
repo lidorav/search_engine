@@ -19,7 +19,7 @@ public class Indexer {
          initalize();
     }
 
-    public void index(ConcurrentHashMap<String , PreTerm> preDictionary){
+    public synchronized void index(ConcurrentHashMap<String , PreTerm> preDictionary){
         for (ConcurrentHashMap.Entry<String,PreTerm> entry  : preDictionary.entrySet()) {
             char fileName;
             String ptermName = entry.getKey();
@@ -37,7 +37,7 @@ public class Indexer {
         }
     }
 
-    public void addChunckToFile(){
+    public synchronized void addChunckToFile(){
         posting.addToFile(newTermsToWrite);
         posting.updateFile(updateTermsToWrite);
         initalize();

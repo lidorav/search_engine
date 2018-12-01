@@ -27,7 +27,6 @@ public class ReadFile {
     }
 
     public void read() {
-        int i = 0;
         for (File dir : corpus.listFiles()) {
             for (File file : dir.listFiles()) {
                 try {
@@ -35,6 +34,7 @@ public class ReadFile {
                     Document doc = Jsoup.parse(file, "UTF-8");
                     Elements documents = doc.getElementsByTag("DOC");
                     for (Element element : documents) {
+                        int i = 0;
                         String docTitle="";
                         String docNum = element.getElementsByTag("DOCNO").get(0).text();
                         Elements docTitleElement = element.getElementsByTag("TI");
@@ -53,6 +53,9 @@ public class ReadFile {
                             }
                         }
                         docMap.put(docNum, new Model.Document(file.getName(), docTitle, i++, docCity));
+                        Elements docTextElement = element.getElementsByTag("TEXT");
+                        if(docTextElement.isEmpty())
+                            continue;
                         String data = element.getElementsByTag("TEXT").get(0).text();
                         parser.parse(docNum, data);
                     }
