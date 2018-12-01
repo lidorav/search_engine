@@ -5,11 +5,24 @@ public class PreTerm {
     private String docID;
     private int tf;
     private boolean inTitle;
+    private boolean atBeginOfDoc;
 
-    public PreTerm(String name, String docID) {
+    public PreTerm(String name, String docID, boolean atBegin) {
         this.name = name;
         this.docID = docID;
         this.tf = 1;
+        isInTitle();
+        this.atBeginOfDoc = atBegin;
+    }
+
+    private void isInTitle(){
+        //checks if the term is in the title opf the doc
+        Document doc = ReadFile.getDoc(docID);
+        String title = doc.getTitle().toLowerCase();
+        if(title.contains(name.toLowerCase()))
+            inTitle = true;
+        else
+            inTitle =false;
     }
 
     public String getName() {
@@ -38,5 +51,9 @@ public class PreTerm {
 
     public boolean getInTitle(){
         return inTitle;
+    }
+
+    public boolean getAtBeginOfDoc() {
+        return atBeginOfDoc;
     }
 }
