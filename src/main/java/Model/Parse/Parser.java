@@ -22,7 +22,7 @@ public class Parser {
     private PorterStemmer porterStemmer;
     private Indexer indexer;
     private Pattern pattern;
-
+    private final int bound = 100;
 
     public Parser() {
         stopWord = new StopWords();
@@ -113,16 +113,16 @@ public class Parser {
     }
 
     private void addTerm(String token, String docID) {
+        boolean isAtBegin = false;
         if(token.length()==1 && !StringUtil.isNumeric(token))
             return;
         token = porterStemmer.stem(token);
-        PreTerm term = new PreTerm(token, docID);
+        if(index <= bound)
+            isAtBegin = true;
+        PreTerm term = new PreTerm(token, docID,isAtBegin);
         if (termsInDoc.containsKey(token))
             termsInDoc.get(token).increaseTf();
         else {
-            Document doc = ReadFile.getDoc(docID);
-            if(doc.getTitle().contains(token))
-                term.setInTitle(true);
             termsInDoc.put(token, term);
         }
     }
