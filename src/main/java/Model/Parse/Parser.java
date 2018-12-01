@@ -1,12 +1,17 @@
 package Model.Parse;
 
+import Model.Document;
 import Model.Index.Indexer;
 import Model.PreTerm;
+import Model.ReadFile;
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -23,22 +28,24 @@ public class Parser {
     private Indexer indexer;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Pattern pattern;
+    private List<String> delimiters;
 
 
     public Parser() {
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
-        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
-
+        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\/+]|-{2}|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        delimiters = new ArrayList<String>(Arrays.asList(",",".","/'",""));
     }
 
     public void parse(String docNum, String text) {
         termsInDoc = new ConcurrentHashMap<>();
         this.docID = docNum;
         index = 0;
-        Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
+        Splitter splitter = Splitter.on(pattern).trimResults(CharMatcher.none()).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
+        tokenList.removeIf(n-> (delimiters.contains(n)));
         classify();
         indexer.index(termsInDoc);
     }
@@ -81,7 +88,6 @@ public class Parser {
         if(res.isEmpty()){
             res = Quotation.parseQuotation(index, token);
         }
-
         return res;
     }
 
@@ -93,21 +99,19 @@ public class Parser {
             res= Combo.parseCombo(index, token);
         }
         if(res.isEmpty()){
-            Hyphen.parseHyphen(index, token);
+            res = Hyphen.parseHyphen(index, token);
         }
         if(res.isEmpty()){
-            Quotation.parseQuotation(index, token);
+            res = Quotation.parseQuotation(index, token);
         }
-
         return res;
-
     }
 
     public static String getTokenFromList(int index) {
         if (index >= tokenList.size())
             return "eof";
         String token = tokenList.get(index);
-        token = token.replaceAll("[,//']", "");
+        token = token.replaceAll("[,\\']", "");
         if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
                 return token.substring(0, token.length() - 1);
@@ -122,8 +126,12 @@ public class Parser {
         PreTerm term = new PreTerm(token, docID);
         if (termsInDoc.containsKey(token))
             termsInDoc.get(token).increaseTf();
-        else
+        else {
+            Document doc = ReadFile.getDoc(docID);
+            if(doc.getTitle().contains(token))
+                term.setInTitle(true);
             termsInDoc.put(token, term);
+        }
     }
 
     public static void replaceToken(int index, String newToken) {

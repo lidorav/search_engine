@@ -4,11 +4,10 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Posting {
 
-    private String path = "C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
+    private String path = "C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
     private Hashtable<String, Integer> postLines;
 
     public Posting() {

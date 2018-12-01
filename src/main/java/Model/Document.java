@@ -25,4 +25,12 @@ public class Document {
         this.title = title;
         this.position= position;
     }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }
