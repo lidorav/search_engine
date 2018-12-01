@@ -14,6 +14,7 @@ public class Text {
      * @return
      */
     public static String parseText(int index, String token){
+        token = token.replace("!","");
         if(token.contains("\"") && token.length()>1)
             token = token.replace("\"","");
         String upperToken = token.toUpperCase();

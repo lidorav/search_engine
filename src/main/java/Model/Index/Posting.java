@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Posting {
 
-    private String path = "C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
+    private String path = "C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Posting";
     private Hashtable<String, Integer> postLines;
 
     public Posting() {

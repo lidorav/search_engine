@@ -22,27 +22,24 @@ public class Parser {
     private PorterStemmer porterStemmer;
     private Indexer indexer;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Pattern pattern;
 
 
     public Parser() {
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
         indexer = new Indexer();
-    }
+        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
 
-    public void shutDownExecutor(){
-        executor.shutdown();
     }
 
     public void parse(String docNum, String text) {
         termsInDoc = new ConcurrentHashMap<>();
         this.docID = docNum;
         index = 0;
-        Pattern pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?\\(\\--\\/+]|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
-        //executor.execute(() -> indexer.index(termsInDoc));
         indexer.index(termsInDoc);
     }
 
@@ -52,20 +49,58 @@ public class Parser {
             if (token.isEmpty() || stopWord.isStopWord(token))
                 continue;
             if (token.matches(".*\\d+.*")) {
-                String term = Price.parsePrice(index, token) + Percentage.parsePercent(index, token) + Date.dateParse(index, token) + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token);
+                String term = numParse(token);
                 if (term.isEmpty())
                     term = ANumbers.parseNumber(index, token);
                 addTerm(term, docID);
             } else {
-                String term = Date.dateParse(index, token) + Combo.parseCombo(index, token) + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token);
+                String term =letterParse(token);
                 if (term.isEmpty()) {
                     term = Text.parseText(index, token);
-                    if (term.isEmpty())
-                        term = token;
                 }
+                if (term.isEmpty())
+                    term = token;
                 addTerm(term, docID);
             }
         }
+    }
+
+    private String numParse (String token){
+        //Price.parsePrice(index, token) + Percentage.parsePercent(index, token) + Date.dateParse(index, token)
+          //      + Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token);
+        String res = Price.parsePrice(index, token);
+        if(res.isEmpty()){
+            res = Percentage.parsePercent(index, token);
+        }
+        if(res.isEmpty()){
+            res = Date.dateParse(index, token);
+        }
+        if(res.isEmpty()){
+            res = Hyphen.parseHyphen(index, token);
+        }
+        if(res.isEmpty()){
+            res = Quotation.parseQuotation(index, token);
+        }
+
+        return res;
+    }
+
+    private String letterParse ( String token){
+        //Date.dateParse(index, token) + Combo.parseCombo(index, token) +
+        // Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token)
+        String res= Date.dateParse(index, token);
+        if(res.isEmpty()){
+            res= Combo.parseCombo(index, token);
+        }
+        if(res.isEmpty()){
+            Hyphen.parseHyphen(index, token);
+        }
+        if(res.isEmpty()){
+            Quotation.parseQuotation(index, token);
+        }
+
+        return res;
+
     }
 
     public static String getTokenFromList(int index) {
@@ -96,7 +131,6 @@ public class Parser {
     }
 
     public void deployFile(){
-        //executor.execute(() -> indexer.addChunckToFile());
         indexer.addChunckToFile();
     }
 
