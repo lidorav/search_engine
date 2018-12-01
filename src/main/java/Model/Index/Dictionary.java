@@ -38,8 +38,7 @@ public class Dictionary {
     public void printDic() {
         PrintWriter outputfile = null;
         try {
-            outputfile = new PrintWriter("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Dic.txt");
-            //C:\Users\USER\Desktop\retrivel\WORK\Dic.txt
+            outputfile = new PrintWriter("C:\\Users\\nkutsky\\Desktop\\Retrival\\Dic.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

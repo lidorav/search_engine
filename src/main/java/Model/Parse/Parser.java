@@ -45,7 +45,7 @@ public class Parser {
     private void updateDoc() {
         int currentMaxValue = Integer.MIN_VALUE;
         Document doc = ReadFile.getDoc(docID);
-        doc.setMaxTf(termsInDoc.size());
+        doc.setUniqueTf(termsInDoc.size());
         for (PreTerm preTerm : termsInDoc.values()){
             if (preTerm.getTf() > currentMaxValue) {
                 currentMaxValue = preTerm.getTf();
