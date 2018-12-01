@@ -21,7 +21,6 @@ public class Parser {
     private StopWords stopWord;
     private PorterStemmer porterStemmer;
     private Indexer indexer;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Pattern pattern;
 
 
@@ -57,9 +56,9 @@ public class Parser {
                 String term =letterParse(token);
                 if (term.isEmpty()) {
                     term = Text.parseText(index, token);
+                    if (term.isEmpty())
+                        term = token;
                 }
-                if (term.isEmpty())
-                    term = token;
                 addTerm(term, docID);
             }
         }
@@ -93,10 +92,10 @@ public class Parser {
             res= Combo.parseCombo(index, token);
         }
         if(res.isEmpty()){
-            Hyphen.parseHyphen(index, token);
+            res = Hyphen.parseHyphen(index, token);
         }
         if(res.isEmpty()){
-            Quotation.parseQuotation(index, token);
+            res = Quotation.parseQuotation(index, token);
         }
 
         return res;
