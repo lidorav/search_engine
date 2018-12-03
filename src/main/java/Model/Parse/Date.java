@@ -47,27 +47,22 @@ public class Date {
 
     private static boolean isShortMonth(String token) {
         token = token.toLowerCase();
-        if (token.length() == 3 && (!token.equals("may")))
-            return true;
+        return token.length() == 3 && (!token.equals("may"));
 
-        return false;
     }
 
     private static String toLongMonth(String targetValue){
         targetValue=targetValue.toLowerCase();
-        for (int i=0; i <dateArr.length;i++){
-             if(dateArr[i].contains(targetValue) && dateArr[i].length()>3){
-                 return dateArr[i];
-             }
+        for (String aDateArr : dateArr) {
+            if (aDateArr.contains(targetValue) && aDateArr.length() > 3) {
+                return aDateArr;
+            }
         }
         return "";
     }
 
     private static boolean isYear(String targetValue) {
-        if (targetValue.length() == 4 && allDigits(targetValue)) {
-            return true;
-        }
-        return false;
+        return targetValue.length() == 4 && allDigits(targetValue);
     }
     private static boolean allDigits(String s) {
         return s.replaceAll("\\d", "").equals("");

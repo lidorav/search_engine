@@ -1,4 +1,4 @@
-package Model.Index;
+package Model.Garbage;
 
 import Model.PostTerm;
 import Model.PreTerm;
@@ -11,11 +11,11 @@ public class Dictionary {
 
     private static volatile ConcurrentHashMap<String, PostTerm> dictionary = new ConcurrentHashMap<>();
 
-    public boolean isInDictionary(String term) {
+    boolean isInDictionary(String term) {
         return dictionary.containsKey(term);
     }
 
-    public void addNewTerm(PreTerm preTerm, int ptr) {
+    void addNewTerm(PreTerm preTerm, int ptr) {
         dictionary.put(preTerm.getName(), new PostTerm(preTerm, ptr));
 
     }
@@ -24,18 +24,16 @@ public class Dictionary {
         return dictionary.get(term);
     }
 
-    public int updateTerm(String term, int tf) {
+    synchronized int updateTerm(String term, int tf) {
         PostTerm pterm = dictionary.get(term);
         pterm.increaseTf(tf);
         pterm.increaseDf();
-        int ptr = pterm.getPtr();
         //add values by ptr
-        dictionary.replace(term, pterm);
-        return ptr;
+        return pterm.getPtr();
     }
 
 
-    public void printDic() {
+    void printDic() {
         PrintWriter outputfile = null;
         try {
             outputfile = new PrintWriter("C:\\Users\\nkutsky\\Desktop\\Retrival\\Dic.txt");

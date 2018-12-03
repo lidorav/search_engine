@@ -19,10 +19,7 @@ public class PreTerm {
         //checks if the term is in the title opf the doc
         Document doc = ReadFile.getDoc(docID);
         String title = doc.getTitle().toLowerCase();
-        if(title.contains(name.toLowerCase()))
-            inTitle = true;
-        else
-            inTitle =false;
+        inTitle = title.contains(name.toLowerCase());
     }
 
     public String getName() {

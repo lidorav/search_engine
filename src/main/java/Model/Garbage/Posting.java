@@ -1,25 +1,24 @@
-package Model.Index;
+package Model.Garbage;
 
 import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class Posting {
+class Posting {
 
     private String path = "C:\\Users\\nkutsky\\Desktop\\Retrival\\Posting";
     //C:\Users\nkutsky\Desktop\Retrival\Posting
     //C:\Users\USER\Desktop\retrivel\WORK\Posting
-    private ConcurrentHashMap<String, Integer> postLines;
+    private HashMap<String, Integer> postLines;
 
-    public Posting() {
+    Posting() {
         try {
             FileUtils.deleteDirectory(new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        postLines = new ConcurrentHashMap<>();
+        postLines = new HashMap<>();
         new File(path).mkdirs();
         for (int i = 0; i <= 9; i++) {
             String fileName = i + ".txt";
@@ -49,19 +48,17 @@ public class Posting {
         postLines.put("symbols.txt", -1);
     }
 
-    public void addToFile(HashMap<Character, TreeMap<Integer, String>> newTermsToWrite) {
-        for (Map.Entry<Character, TreeMap<Integer, String>> mapEntry:newTermsToWrite.entrySet()) {
+    void addToFile(HashMap<Character, TreeMap<Integer, StringBuilder>> newTermsToWrite) {
+        for (Map.Entry<Character, TreeMap<Integer, StringBuilder>> mapEntry:newTermsToWrite.entrySet()) {
             String filename = getFileName(mapEntry.getKey());
-            TreeMap<Integer,String> tree = mapEntry.getValue();
+            TreeMap<Integer,StringBuilder> tree = mapEntry.getValue();
             File file = new File(path+"\\"+filename);
             try {
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
-                for (String line:tree.values()) {
-                    out.write(line);
+                for (StringBuilder line:tree.values()) {
+                    out.write(line.toString());
                 }
                 out.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -70,12 +67,12 @@ public class Posting {
 
 
 
-    public void updateFile(HashMap<Character, TreeMap<Integer, String>> updateTermsToWrite) {
+    void updateFile(HashMap<Character, TreeMap<Integer, StringBuilder>> updateTermsToWrite, HashMap<Character, TreeMap<Integer, StringBuilder>> newTermsToWrite) {
         int lineCounter = 0;
-        for (Map.Entry<Character, TreeMap<Integer, String>> mapEntry : updateTermsToWrite.entrySet()) {
+        for (Map.Entry<Character, TreeMap<Integer, StringBuilder>> mapEntry : updateTermsToWrite.entrySet()) {
             String filename = getFileName(mapEntry.getKey());
-            TreeMap<Integer, String> tree = mapEntry.getValue();
-            if(tree.isEmpty())
+            TreeMap<Integer, StringBuilder> treeUpdate = mapEntry.getValue();
+            if(treeUpdate.isEmpty())
                 continue;
             File fileFrom = new File(path+"\\"+filename);
             File fileTo = new File(path+"\\"+filename+1);
@@ -83,30 +80,36 @@ public class Posting {
                 BufferedReader br = new BufferedReader(new FileReader(fileFrom));
                 BufferedWriter out = new BufferedWriter(new FileWriter(fileTo));
                 String sCurrentLine;
-                Set set = tree.entrySet();
-                Iterator it = set.iterator();
-                Map.Entry<Integer, String> treeEntry;
-                treeEntry = (Map.Entry) it.next();
+                Set<Map.Entry<Integer, StringBuilder>> set = treeUpdate.entrySet();
+                Iterator<Map.Entry<Integer, StringBuilder>> it = set.iterator();
+                Map.Entry<Integer, StringBuilder> treeEntry = it.next();
                 while ((sCurrentLine = br.readLine()) != null) {
                     if (lineCounter == treeEntry.getKey()) {
                         //change and write tp file
-                        String newLine = sCurrentLine + treeEntry.getValue() + "\r\n";
-                        out.write(newLine);
+                        out.write(sCurrentLine + treeEntry.getValue().toString() + "\r\n");
                         if(it.hasNext())
-                            treeEntry = (Map.Entry) it.next();
+                            treeEntry = it.next();
                     } else {
                         //write to file without change
                         out.write(sCurrentLine+"\r\n");
                     }
                     lineCounter++;
                 }
+                TreeMap<Integer, StringBuilder> treeNew = newTermsToWrite.get(mapEntry.getKey());
+                for(int lineNum:treeNew.keySet()){
+                    if(treeUpdate.containsKey(lineNum)){
+                        out.write(treeNew.get(lineNum).append(treeUpdate.get(lineNum).append("\r\n")).toString());
+                    }
+                    else{
+                        out.write(treeNew.get(lineNum).append("\r\n").toString());
+                    }
+                }
+
                 br.close();
                 out.close();
                 fileFrom.delete();
                 fileTo.renameTo(fileFrom);
                 lineCounter=0;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -123,12 +126,10 @@ public class Posting {
     }
 
     private boolean isSymbol(char c) {
-        if (!Character.isDigit(c) && !(c >= 'a' && c <= 'z'))
-            return true;
-        return false;
+        return !Character.isDigit(c) && !(c >= 'a' && c <= 'z');
     }
 
-    public int getNextLine(char c) {
+    int getNextLine(char c) {
         String filename = getFileName(c);
         try {
             int ptr = postLines.get(filename) + 1;

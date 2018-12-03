@@ -8,22 +8,26 @@ public class Document {
     private String fileName;
     private String title;
     private int position ;
+    private String date;
+    private String text;
+    private String docID;
 
-    @Override
-    public String toString() {
-        return "Document{" +
-                "city='" + city + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", title='" + title + '\'' +
-                ", position=" + position +
-                '}';
+    public Document(String fileName){
+        this.fileName = fileName;
     }
 
-    public Document(String fileName, String title, int position, String city) {
+    public Document(String fileName, String title, int position, String city, String date, String data, String docID) {
         this.city = city;
         this.fileName = fileName;
         this.title = title;
         this.position= position;
+        this.date = date;
+        this.text = data;
+        this.docID = docID;
+    }
+
+    public String getDocID() {
+        return docID;
     }
 
     public String getFileName() {
@@ -40,5 +44,23 @@ public class Document {
 
     public String getTitle() {
         return title;
+    }
+
+    public void cleanText(){
+        text="";
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "city='" + city + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", title='" + title + '\'' +
+                ", position=" + position +
+                '}';
     }
 }

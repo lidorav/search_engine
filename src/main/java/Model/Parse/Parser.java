@@ -1,7 +1,6 @@
 package Model.Parse;
 
 import Model.Document;
-import Model.Index.Indexer;
 import Model.PreTerm;
 import Model.ReadFile;
 import com.google.common.base.Splitter;
@@ -9,37 +8,61 @@ import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.BlockingQueue;
 import java.util.regex.Pattern;
 
-public class Parser {
-    public static int index;
+public class Parser implements Runnable {
+    protected static int index;
     private static List<String> tokenList;
-    private static ConcurrentHashMap<String, PreTerm> termsInDoc;
-    private String docID;
+    private static HashMap<String, PreTerm> termsInDoc;
     private StopWords stopWord;
+    private BlockingQueue<Document> read_parse;
+    private BlockingQueue<HashMap<String,PreTerm>> indexer_parse;
     private PorterStemmer porterStemmer;
-    private Indexer indexer;
-    private Pattern pattern;
-    private final int bound = 100;
+    private static Pattern pattern;
+    private String docID;
+    private static final int bound = 100;
 
-    public Parser() {
+    public Parser(BlockingQueue bqA, BlockingQueue bqB) {
         stopWord = new StopWords();
         porterStemmer = new PorterStemmer();
-        indexer = new Indexer();
-        pattern = Pattern.compile("[ \\*\\|\\&\\(\\)\\[\\]\\:\\;\\!\\?]|-{2}|((?=[a-zA-Z]?)\\/(?=[a-zA-Z]))|((?<=[a-zA-Z])\\/(?=[\\d]))|((?=[\\d]?)\\/(?<=[a-zA-Z]))");
+        read_parse = bqA;
+        indexer_parse = bqB;
+        pattern = Pattern.compile("[ *#|&()\\[\\]:;!?{}]|-{2}|((?=[a-zA-Z]?)/(?=[a-zA-Z]))|((?<=[a-zA-Z])/(?=[\\d]))|((?=[\\d]?)/(?<=[a-zA-Z]))");
+    }
+
+    public void run() {
+        try {
+            Document doc;
+            //consuming messages until exit message is received
+            while(!(doc = read_parse.take()).getFileName().equals("fin")){
+                String docID = doc.getDocID();
+                System.out.println("Parser - " + docID);
+                String text = doc.getText();
+                parse(docID,text);
+                doc.cleanText();
+                }
+                indexer_parse.put(new HashMap<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void parse(String docNum, String text) {
-        termsInDoc = new ConcurrentHashMap<>();
+        termsInDoc = new HashMap<>();
         this.docID = docNum;
         index = 0;
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
         tokenList = new ArrayList<>(splitter.splitToList(text));
         classify();
         updateDoc();
-        indexer.index(termsInDoc);
+        try {
+            indexer_parse.put(new HashMap<>(termsInDoc));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateDoc() {
@@ -99,9 +122,9 @@ public class Parser {
         //Date.dateParse(index, token) + Combo.parseCombo(index, token) +
         // Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token)
         String res= Date.dateParse(index, token);
-       //if(res.isEmpty()){
-       //     res= Combo.parseCombo(index, token);
-        //}
+       if(res.isEmpty()){
+            res= Combo.parseCombo(index, token);
+        }
         if(res.isEmpty()){
             res = Hyphen.parseHyphen(index, token);
         }
@@ -111,14 +134,14 @@ public class Parser {
         return res;
     }
 
-    public static String getTokenFromList(int index) {
+    static String getTokenFromList(int index) {
         if (index >= tokenList.size())
             return "eof";
         String token = tokenList.get(index);
-        token = token.replaceAll("[,\\']", "");
+        token = token.replaceAll("[,'`]", "");
         if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
-                 token.substring(0, token.length() - 1);
+                 token = token.substring(0, token.length() - 1);
         }
         if(token.isEmpty())
             token = getTokenFromList(index+1);
@@ -140,15 +163,18 @@ public class Parser {
         }
     }
 
-    public static void replaceToken(int index, String newToken) {
+    static void replaceToken(int index, String newToken) {
         tokenList.set(index, newToken);
     }
 
-    public void deployFile(){
-        indexer.addChunckToFile();
+    static boolean checkExist(String token){
+        return termsInDoc.containsKey(token);
     }
 
-    public void printDic() {
-        indexer.printDic();
+    static void replaceTerm(String currentTerm, String newTerm){
+        PreTerm term = termsInDoc.get(currentTerm);
+        term.setName(newTerm);
+        termsInDoc.remove(currentTerm);
+        termsInDoc.put(newTerm,term);
     }
 }
