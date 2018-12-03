@@ -1,14 +1,37 @@
+import Model.Document;
+import Model.Garbage.Indexer;
+import Model.Parse.Parser;
+import Model.PreTerm;
 import Model.ReadFile;
+
+import java.util.HashMap;
+import java.util.concurrent.*;
 
 
 public class Main {
     public static void main(String[] args){
-        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\Retrival\\corpus2");
+        BlockingQueue<Document> queueA = new LinkedBlockingQueue<>();
+        BlockingQueue<HashMap<String, PreTerm>> queueB = new LinkedBlockingQueue<>();
+        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\Retrival\\corpus", queueA);
+        Parser parser = new Parser(queueA,queueB);
+        Indexer indexer = new Indexer(queueB);
         long startTime = System.nanoTime();
-        reader.read();
-        reader.print();
+        Thread t1 = new Thread(reader);
+        Thread t2 = new Thread(parser);
+        Thread t3 = new Thread(indexer);
+        t1.start();
+        t2.start();
+        t3.start();
+        try{
+            t1.join();
+            t2.join();
+            t3.join();
+        }catch (Exception e){}
+
+        //starting consumer to consume messages from queue
         long endTime = System.nanoTime();
         long timeElapsed = endTime - startTime;
+        indexer.printDic();
 
         System.out.println("Execution time in sec : " +
                 timeElapsed / 1000000000);

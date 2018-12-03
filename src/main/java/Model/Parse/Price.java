@@ -22,7 +22,7 @@ public class Price extends ANumbers {
         if(thirdToken.contains("dollar")){
             res = convertToMillions(firstToken,secToken);
             Parser.index++;
-            if(secToken.matches("\\d+\\/\\d+")) {
+            if(secToken.matches("\\d+/\\d+")) {
                 fraction = " "+secToken;
                 Parser.index++;
             }
@@ -32,7 +32,7 @@ public class Price extends ANumbers {
         if(forthToken.contains("dollar")){
             res = convertToMillions(firstToken,secToken);
             Parser.index = Parser.index + 2;
-            if(secToken.matches("\\d+\\/\\d+")) {
+            if(secToken.matches("\\d+/\\d+")) {
                 fraction = " "+secToken;
                 Parser.index++;
             }

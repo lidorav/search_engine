@@ -1,27 +1,31 @@
 package Model;
 
-import Model.Parse.Parser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ReadFile {
+public class ReadFile implements Runnable {
     private File corpus;
-    private Parser parser;
-    private static HashMap<String, Model.Document> docMap;
-
+    private static ConcurrentHashMap<String, Model.Document> docMap;
+    private BlockingQueue<Model.Document> parse_read;
 
 
     //constructor
-    public ReadFile(String path){
+    public ReadFile(String path, BlockingQueue bq){
         corpus = new File(path);
-        parser = new Parser();
-        docMap = new HashMap<>();
-        //semaphore = new Semaphore(1);
+        docMap = new ConcurrentHashMap<>();
+        parse_read = bq;
+    }
+
+    @Override
+    public void run() {
+        read();
     }
 
     public void read() {
@@ -32,42 +36,64 @@ public class ReadFile {
                     Document doc = Jsoup.parse(file, "UTF-8");
                     Elements documents = doc.getElementsByTag("DOC");
                     for (Element element : documents) {
-                        int i = 0;
-                        String docTitle="";
+                        int i = 0;//mark the place of the doc in the file
                         String docNum = element.getElementsByTag("DOCNO").get(0).text();
+
+                        //check if title/headline exists and retrieve from document
+                        String docTitle = "";
                         Elements docTitleElement = element.getElementsByTag("TI");
-                        if(docTitleElement.isEmpty())
+                        if (docTitleElement.isEmpty())
                             docTitleElement = element.getElementsByTag("HEADLINE");
-                        if(!docTitleElement.isEmpty()){
+                        if (!docTitleElement.isEmpty()) {
                             docTitle = docTitleElement.get(0).text();
                         }
+
+                        //check if city exists and retrieve from document
                         String docCity = "";
                         Elements docCityElement = element.getElementsByTag("F");
-
                         if (!docCityElement.isEmpty()) {
-                            if (docCityElement.attr("p").equals("104")) {
-                                docCity = docCityElement.get(0).text();
-                                docCity = docCity.split(" ")[0].toUpperCase();
+                            if (docCityElement.eachAttr("p").contains("104")) {
+                                Iterator iter = docCityElement.iterator();
+                                while (iter.hasNext()) {
+                                    Element elem = (Element) iter.next();
+                                    if (elem.attributes().get("p").equals("104"))
+                                        docCity = elem.text();
+                                }
+                                String[] parts = docCity.split(" ");
+                                docCity = parts[0].toUpperCase();
                             }
                         }
-                        docMap.put(docNum, new Model.Document(file.getName(), docTitle, i++, docCity));
+
+                        //check if date exists and retrieve from document
+                        String docDate = "";
+                        Elements docDateElement = element.getElementsByTag("DATE");
+                        if (!docDateElement.isEmpty()) {
+                            docDate = docDateElement.get(0).text();
+                        }
+                        //check if text exists and retrieve from documenet
                         Elements docTextElement = element.getElementsByTag("TEXT");
-                        if(docTextElement.isEmpty())
+                        if (docTextElement.isEmpty())
                             continue;
                         String data = element.getElementsByTag("TEXT").get(0).text();
-                        parser.parse(docNum, data);
+                        Model.Document modelDoc = new Model.Document(file.getName(), docTitle, i++, docCity, docDate, data, docNum);
+                        docMap.put(docNum, modelDoc);
+                        //send document data for parsing
+                        parse_read.put(modelDoc);
+
                     }
                 } catch (Exception e) {
                     System.out.println(e + "error");
                 }
             }
-            parser.deployFile();
-        }
-        //parser.shutDownExecutor();
-    }
+            //after file is complete we deploy it to the posting file
 
-    public void print() {
-        parser.printDic();
+        }
+        try {
+            //parser.shutDownExecutor();
+            parse_read.put(new Model.Document("fin"));
+        }catch (Exception e){
+            System.out.println("error queue");
+        }
     }
 
     public static Model.Document getDoc(String docID){
