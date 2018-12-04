@@ -5,6 +5,7 @@ import Model.PreTerm;
 import Model.ReadFile;
 import com.google.common.base.Splitter;
 import opennlp.tools.stemmer.PorterStemmer;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class Parser implements Runnable {
         if (index >= tokenList.size())
             return "eof";
         String token = tokenList.get(index);
-        token = token.replaceAll("[,'`]", "");
+        token = token.replaceAll("[,'` ]", "");
         if (!token.isEmpty()) {
             if (token.charAt(token.length() - 1) == '.')
                  token = token.substring(0, token.length() - 1);
@@ -153,6 +154,7 @@ public class Parser implements Runnable {
         if(token.length()==1 && !StringUtil.isNumeric(token))
             return;
         token = porterStemmer.stem(token);
+        token = cleanToken(token);
         if(index <= bound)
             isAtBegin = true;
         PreTerm term = new PreTerm(token, docID,isAtBegin);
@@ -161,6 +163,14 @@ public class Parser implements Runnable {
         else {
             tempDictionary.put(token, term);
         }
+    }
+
+    private String cleanToken(String token) {
+        String res =StringUtils.stripStart(token,null);
+        res =StringUtils.stripEnd(res,null);
+        res =StringUtils.stripStart(res,"\"-./");
+        res =StringUtils.stripEnd(res,"\"-./");
+        return res;
     }
 
     static void replaceToken(int index, String newToken) {

@@ -69,6 +69,7 @@ public class Indexer implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        posting.mergePosting();
     }
 
     private boolean isInTempPosting(String key) {

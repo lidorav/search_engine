@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args){
         BlockingQueue<Document> queueA = new LinkedBlockingQueue<>();
         BlockingQueue<ConcurrentHashMap<String, PreTerm>> queueB = new LinkedBlockingQueue<>();
-        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\Retrival\\corpus", queueA);
+        ReadFile reader = new ReadFile("D:\\corpus", queueA);
         Parser parser = new Parser(queueA,queueB);
         Indexer indexer = new Indexer(queueB);
         long startTime = System.nanoTime();
