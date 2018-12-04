@@ -11,16 +11,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class Parser implements Runnable {
     protected static int index;
     private static List<String> tokenList;
-    private static HashMap<String, PreTerm> termsInDoc;
+    private static ConcurrentHashMap<String, PreTerm> tempDictionary;
     private StopWords stopWord;
     private BlockingQueue<Document> read_parse;
-    private BlockingQueue<HashMap<String,PreTerm>> indexer_parse;
-    private PorterStemmer porterStemmer;
+    private BlockingQueue<ConcurrentHashMap<String,PreTerm>> indexer_parse;
+    private static PorterStemmer porterStemmer;
     private static Pattern pattern;
     private String docID;
     private static final int bound = 100;
@@ -30,7 +31,7 @@ public class Parser implements Runnable {
         porterStemmer = new PorterStemmer();
         read_parse = bqA;
         indexer_parse = bqB;
-        pattern = Pattern.compile("[ *#|&()\\[\\]:;!?{}]|-{2}|((?=[a-zA-Z]?)/(?=[a-zA-Z]))|((?<=[a-zA-Z])/(?=[\\d]))|((?=[\\d]?)/(?<=[a-zA-Z]))");
+        pattern = Pattern.compile("[ \\*\\#\\|\\&\\(\\)\\[\\]:\\;\\!\\?\\{\\}]|-{2}|((?=[a-zA-Z]?)/(?=[a-zA-Z]))|((?<=[a-zA-Z])/(?=[\\d]))|((?=[\\d]?)/(?<=[a-zA-Z]))");
     }
 
     public void run() {
@@ -39,19 +40,18 @@ public class Parser implements Runnable {
             //consuming messages until exit message is received
             while(!(doc = read_parse.take()).getFileName().equals("fin")){
                 String docID = doc.getDocID();
-                System.out.println("Parser - " + docID);
                 String text = doc.getText();
                 parse(docID,text);
                 doc.cleanText();
                 }
-                indexer_parse.put(new HashMap<>());
+                indexer_parse.put(new ConcurrentHashMap<>());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void parse(String docNum, String text) {
-        termsInDoc = new HashMap<>();
+        tempDictionary = new ConcurrentHashMap<>();
         this.docID = docNum;
         index = 0;
         Splitter splitter = Splitter.on(pattern).omitEmptyStrings();
@@ -59,7 +59,7 @@ public class Parser implements Runnable {
         classify();
         updateDoc();
         try {
-            indexer_parse.put(new HashMap<>(termsInDoc));
+            indexer_parse.put(tempDictionary);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +68,8 @@ public class Parser implements Runnable {
     private void updateDoc() {
         int currentMaxValue = Integer.MIN_VALUE;
         Document doc = ReadFile.getDoc(docID);
-        doc.setUniqueTf(termsInDoc.size());
-        for (PreTerm preTerm : termsInDoc.values()){
+        doc.setUniqueTf(tempDictionary.size());
+        for (PreTerm preTerm : tempDictionary.values()){
             if (preTerm.getTf() > currentMaxValue) {
                 currentMaxValue = preTerm.getTf();
             }
@@ -122,9 +122,9 @@ public class Parser implements Runnable {
         //Date.dateParse(index, token) + Combo.parseCombo(index, token) +
         // Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token)
         String res= Date.dateParse(index, token);
-       if(res.isEmpty()){
-            res= Combo.parseCombo(index, token);
-        }
+       if(res.isEmpty()) {
+           res = Combo.parseCombo(index, token);
+       }
         if(res.isEmpty()){
             res = Hyphen.parseHyphen(index, token);
         }
@@ -156,10 +156,10 @@ public class Parser implements Runnable {
         if(index <= bound)
             isAtBegin = true;
         PreTerm term = new PreTerm(token, docID,isAtBegin);
-        if (termsInDoc.containsKey(token))
-            termsInDoc.get(token).increaseTf();
+        if (tempDictionary.containsKey(token))
+            tempDictionary.get(token).increaseTf();
         else {
-            termsInDoc.put(token, term);
+            tempDictionary.put(token, term);
         }
     }
 
@@ -168,13 +168,13 @@ public class Parser implements Runnable {
     }
 
     static boolean checkExist(String token){
-        return termsInDoc.containsKey(token);
+        return tempDictionary.containsKey(token);
     }
 
     static void replaceTerm(String currentTerm, String newTerm){
-        PreTerm term = termsInDoc.get(currentTerm);
+        PreTerm term = tempDictionary.get(currentTerm);
         term.setName(newTerm);
-        termsInDoc.remove(currentTerm);
-        termsInDoc.put(newTerm,term);
+        tempDictionary.remove(currentTerm);
+        tempDictionary.put(newTerm,term);
     }
 }

@@ -1,6 +1,7 @@
 package Model.Parse;
 
-import Model.Garbage.Dictionary;
+
+import Model.Index.Dictionary;
 
 /**
  * Class that represent only text tokens

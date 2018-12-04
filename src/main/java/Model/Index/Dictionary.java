@@ -1,4 +1,4 @@
-package Model.Garbage;
+package Model.Index;
 
 import Model.PostTerm;
 import Model.PreTerm;
@@ -9,40 +9,41 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Dictionary {
 
-    private static volatile ConcurrentHashMap<String, PostTerm> dictionary = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, PostTerm> dictionary;
+
+    public Dictionary(){
+        dictionary = new ConcurrentHashMap<>();
+    }
 
     boolean isInDictionary(String term) {
         return dictionary.containsKey(term);
     }
 
-    void addNewTerm(PreTerm preTerm, int ptr) {
-        dictionary.put(preTerm.getName(), new PostTerm(preTerm, ptr));
-
+    void addNewTerm(PreTerm preTerm) {
+        dictionary.put(preTerm.getName(), new PostTerm(preTerm));
     }
 
     public PostTerm getTerm(String term) {
         return dictionary.get(term);
     }
 
-    synchronized int updateTerm(String term, int tf) {
-        PostTerm pterm = dictionary.get(term);
-        pterm.increaseTf(tf);
+    void updateTerm(PreTerm preTerm) {
+        PostTerm pterm = dictionary.get(preTerm.getName());
+        pterm.increaseTf(preTerm.getTf());
         pterm.increaseDf();
         //add values by ptr
-        return pterm.getPtr();
     }
-
 
     void printDic() {
         PrintWriter outputfile = null;
         try {
-            outputfile = new PrintWriter("C:\\Users\\nkutsky\\Desktop\\Retrival\\Dic.txt");
+            outputfile = new PrintWriter("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\Dic.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         for (PostTerm p : dictionary.values()
-        ) {
+                ) {
             outputfile.println(p);
         }
         outputfile.close();

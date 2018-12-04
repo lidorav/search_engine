@@ -99,4 +99,8 @@ public class ReadFile implements Runnable {
     public static Model.Document getDoc(String docID){
         return docMap.get(docID);
     }
+
+    public static void removeDoc(String docID){
+        docMap.remove(docID);
+    }
 }

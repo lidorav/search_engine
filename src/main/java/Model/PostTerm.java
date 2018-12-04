@@ -5,18 +5,12 @@ public class PostTerm {
     private int df;
     private int tf;
     private int ptr;
-    private boolean inTitle;
-    private boolean atBeginOfDoc;
 
-    public PostTerm(PreTerm preTerm, int ptr){
+
+    public PostTerm(PreTerm preTerm){
         this.name = preTerm.getName();
         this.tf = preTerm.getTf();
         this.df = 1;
-        this.ptr = ptr;
-        this.inTitle = preTerm.getInTitle();
-        this.atBeginOfDoc = preTerm.getAtBeginOfDoc();
-
-
     }
 
     public void increaseTf(int tf){
@@ -58,8 +52,6 @@ public class PostTerm {
                 ", df=" + df +
                 ", tf=" + tf +
                 ", ptr=" + ptr +
-                ", inTitle=" + inTitle +
-                ", atBeginOfDoc=" + atBeginOfDoc +
                 '}';
     }
 }

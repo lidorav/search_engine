@@ -47,18 +47,21 @@ public class Document {
     }
 
     public void cleanText(){
-        text="";
+        text=null;
     }
-
+    public StringBuilder getDocInfo(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(docID).append(":").append(fileName).append(":").append(position)
+                .append(":").append(maxTf).append(":").append(uniqueTf);
+        return sb;
+    }
     public String getText() {
         return text;
     }
 
     @Override
     public String toString() {
-        return "Document{" +
-                "city='" + city + '\'' +
-                ", fileName='" + fileName + '\'' +
+        return  ", fileName='" + fileName + '\'' +
                 ", title='" + title + '\'' +
                 ", position=" + position +
                 '}';
