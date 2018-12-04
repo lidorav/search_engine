@@ -122,9 +122,9 @@ public class Parser implements Runnable {
         //Date.dateParse(index, token) + Combo.parseCombo(index, token) +
         // Hyphen.parseHyphen(index, token) + Quotation.parseQuotation(index, token)
         String res= Date.dateParse(index, token);
-       if(res.isEmpty()) {
-           res = Combo.parseCombo(index, token);
-       }
+       //if(res.isEmpty()) {
+           //res = Combo.parseCombo(index, token);
+       //}
         if(res.isEmpty()){
             res = Hyphen.parseHyphen(index, token);
         }

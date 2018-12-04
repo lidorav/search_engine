@@ -10,9 +10,9 @@ import java.util.concurrent.*;
 
 public class Main {
     public static void main(String[] args){
-        BlockingQueue<Document> queueA = new LinkedBlockingQueue<>(2000);
-        BlockingQueue<ConcurrentHashMap<String, PreTerm>> queueB = new LinkedBlockingQueue<>(2000);
-        ReadFile reader = new ReadFile("C:\\Users\\USER\\Desktop\\retrivel\\WORK\\New folder", queueA);
+        BlockingQueue<Document> queueA = new LinkedBlockingQueue<>();
+        BlockingQueue<ConcurrentHashMap<String, PreTerm>> queueB = new LinkedBlockingQueue<>();
+        ReadFile reader = new ReadFile("C:\\Users\\nkutsky\\Desktop\\Retrival\\corpus", queueA);
         Parser parser = new Parser(queueA,queueB);
         Indexer indexer = new Indexer(queueB);
         long startTime = System.nanoTime();
